@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { login } from '../helpers/auth';
+import { Link } from 'react-router-dom';
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -43,38 +45,48 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>Iniciar Sesión</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {isNewUser && (
+    <div className="login-container">
+      <div className="login-box">
+        <h2>{isNewUser ? 'Registrarse' : 'Iniciar Sesión'}</h2>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit}>
           <input
-            type="text"
-            placeholder="Nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
-        )}
-        <button type="submit">{isNewUser ? 'Registrarse' : 'Iniciar Sesión'}</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {isNewUser && (
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+          )}
+          <button type="submit">{isNewUser ? 'Registrarse' : 'Iniciar Sesión'}</button>
+        </form>
+        <p className="toggle-text">
+          {isNewUser ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
+          <span onClick={() => setIsNewUser(!isNewUser)}>
+            {isNewUser ? 'Inicia sesión' : 'Regístrate'}
+          </span>
+        </p>
+        <Link to="/" className="back-home">Volver a inicio</Link>
+      </div>
     </div>
   );
 };
 
 export default Login;
+
 
