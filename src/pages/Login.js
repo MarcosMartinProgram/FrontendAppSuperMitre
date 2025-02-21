@@ -45,7 +45,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-page">
       <div className="login-box">
         <h2>{isNewUser ? 'Registrarse' : 'Iniciar Sesión'}</h2>
         {error && <p className="error-message">{error}</p>}
