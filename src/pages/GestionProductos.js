@@ -1,3 +1,4 @@
+// /pages/GestionProductos.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,8 @@ const GestionProductos = () => {
     stock: '',
     id_rubro: '',
     descripcion: '',
+    imagen_url: '',
+
   });
   const [editarProducto, setEditarProducto] = useState(null);
   const navigate = useNavigate();
@@ -40,6 +43,7 @@ const GestionProductos = () => {
         stock: '',
         id_rubro: '',
         descripcion: '',
+        imagen_url: '',
       });
       // Actualizar la lista de productos
       const response = await axios.get('https://cacmarcos.alwaysdata.net/api/productos');
@@ -124,6 +128,12 @@ const GestionProductos = () => {
           value={nuevoProducto.descripcion}
           onChange={(e) => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })}
         />
+        <input 
+          type="text" 
+          placeholder="URL de la Imagen" 
+          value={nuevoProducto.imagen_url} 
+          onChange={(e) => setNuevoProducto({ ...nuevoProducto, imagen_url: e.target.value })} 
+        />
         <button onClick={agregarProducto}>Agregar Producto</button>
       </div>
 
@@ -172,6 +182,12 @@ const GestionProductos = () => {
             placeholder="Descripción"
             value={editarProducto.descripcion}
             onChange={(e) => setEditarProducto({ ...editarProducto, descripcion: e.target.value })}
+          />
+          <input 
+            type="text" 
+            placeholder="URL de la Imagen" 
+            value={nuevoProducto.imagen_url} 
+            onChange={(e) => setNuevoProducto({ ...nuevoProducto, imagen_url: e.target.value })} 
           />
           <button onClick={guardarEdicion}>Guardar Cambios</button>
           <button onClick={() => setEditarProducto(null)}>Cancelar</button>
