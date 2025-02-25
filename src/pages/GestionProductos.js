@@ -186,8 +186,8 @@ const GestionProductos = () => {
           <input 
             type="text" 
             placeholder="URL de la Imagen" 
-            value={nuevoProducto.imagen_url} 
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, imagen_url: e.target.value })} 
+            value={editarProducto.imagen_url} 
+            onChange={(e) => setEditarProducto({ ...editarProducto, imagen_url: e.target.value })} 
           />
           <button onClick={guardarEdicion}>Guardar Cambios</button>
           <button onClick={() => setEditarProducto(null)}>Cancelar</button>

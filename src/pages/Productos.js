@@ -140,7 +140,7 @@ const Productos = () => {
               <td>{producto.id_rubro}</td>
               <td>
                 {producto.imagen ? (
-                  <img src={producto.imagen} alt={producto.nombre} style={{ width: '50px', height: '50px' }} />
+                  <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '50px', height: '50px' }} />
                 ) : (
                   "Sin imagen"
                 )}
