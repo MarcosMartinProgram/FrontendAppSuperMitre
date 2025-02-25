@@ -13,6 +13,7 @@ import GestionProductos from './pages/GestionProductos';
 import RegistrarVentas from './pages/RegistrarVentas';
 import Reportes from './pages/Reportes';
 import './App.css'; 
+import Footer from "./components/Footer";
 // Función para verificar si el usuario tiene acceso
 const PrivateRoute = ({ element, allowedRoles }) => {
   const token = localStorage.getItem('authToken'); // Obtiene el token del almacenamiento local
@@ -71,6 +72,7 @@ const App = () => {
         <Route path="/registrar-ventas" element={<PrivateRoute element={<RegistrarVentas />} />} allowedRoles={['master']} />
         <Route path="/reportes" element={<PrivateRoute element={<Reportes />} />} allowedRoles={['master']} />
       </Routes>
+      <Footer />
     </Router>
   );
 };
