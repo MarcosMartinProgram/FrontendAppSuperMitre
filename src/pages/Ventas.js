@@ -1,3 +1,4 @@
+// pages/Ventas.js
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Container, TextField, Button, Typography, Paper, Grid, Modal, Box, List, ListItem, ListItemText } from '@mui/material';

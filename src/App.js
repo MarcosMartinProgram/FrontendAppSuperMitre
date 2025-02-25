@@ -1,17 +1,19 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; // Para decodificar el token
+import Home from './pages/Home';
 import Login from './pages/Login';
 import PanelPrincipal from './pages/PanelPrincipal';
 import Productos from './pages/Productos';
 import Rubros from './pages/Rubros';
 import Tienda from './pages/Tienda';
 import Ventas from './pages/Ventas';
-
+import Navbar from './components/Navbar'; 
 import GestionProductos from './pages/GestionProductos';
 import RegistrarVentas from './pages/RegistrarVentas';
 import Reportes from './pages/Reportes';
-
+import './App.css'; 
+import Footer from "./components/Footer";
 // Función para verificar si el usuario tiene acceso
 const PrivateRoute = ({ element, allowedRoles }) => {
   const token = localStorage.getItem('authToken'); // Obtiene el token del almacenamiento local
@@ -39,9 +41,11 @@ const PrivateRoute = ({ element, allowedRoles }) => {
 const App = () => {
   return (
     <Router>
+      <Navbar />
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
 
         {/* Rutas protegidas por rol */}
         <Route
@@ -68,6 +72,7 @@ const App = () => {
         <Route path="/registrar-ventas" element={<PrivateRoute element={<RegistrarVentas />} />} allowedRoles={['master']} />
         <Route path="/reportes" element={<PrivateRoute element={<Reportes />} />} allowedRoles={['master']} />
       </Routes>
+      <Footer />
     </Router>
   );
 };

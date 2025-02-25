@@ -1,3 +1,4 @@
+// pages/Tienda.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
@@ -70,6 +71,11 @@ const Tienda = () => {
       <div style={styles.productos}>
         {productos.map(producto => (
           <div key={producto.codigo_barras} style={styles.producto}>
+            {producto.imagen ? (
+              <img src={producto.imagen} alt={producto.nombre} style={styles.imagen} />
+            ) : (
+              <p>Sin imagen</p>
+            )}
             <h3>{producto.nombre}</h3>
             <p>Precio: ${producto.precio}</p>
             <button onClick={() => agregarAlCarrito(producto)} style={styles.button}>
@@ -124,6 +130,12 @@ const styles = {
     borderRadius: '5px',
     width: '200px',
     textAlign: 'center',
+  },
+  imagen: {
+    width: '100%', // Ajustar al tamaño del contenedor
+    height: '150px', // Altura fija para uniformidad
+    objectFit: 'cover', // Mantiene proporciones y rellena el espacio
+    borderRadius: '5px',
   },
   button: {
     marginTop: '10px',

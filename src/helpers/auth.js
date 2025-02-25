@@ -1,19 +1,23 @@
-// auth.js
+// /helpers/auth.js
 const isElectron = () => window && window.electronAPI;
 
-export const login = async (email, password, nombre = null) => {
+export const login = async (email, password, nombre = null, numero_whatsapp = null, direccion = null) => {
   if (isElectron()) {
     return await window.electronAPI.validarLogin(email, password);
   } else {
     const response = await fetch('https://cacmarcos.alwaysdata.net/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, nombre }),
+      body: JSON.stringify({ email, password, nombre, numero_whatsapp, direccion }),
     });
     if (!response.ok) {
       throw new Error('Error en la solicitud');
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log("Respuesta del servidor:", data); // Agrega este log para ver la respuesta
+    return data;
+  
   }
 };
 

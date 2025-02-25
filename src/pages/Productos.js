@@ -1,3 +1,4 @@
+// pages/Productos.js
 import React, { useState, useEffect } from 'react';
 
 const Productos = () => {
@@ -108,6 +109,13 @@ const Productos = () => {
           onChange={handleInputChange}
           required
         />
+        <input
+          type="text"
+          name="imagen"
+          placeholder="URL de la Imagen"
+          value={formData.imagen}
+          onChange={handleInputChange}
+        />
         <button type="submit">{editing ? 'Actualizar' : 'Agregar'}</button>
       </form>
 
@@ -130,6 +138,13 @@ const Productos = () => {
               <td>{producto.precio}</td>
               <td>{producto.stock}</td>
               <td>{producto.id_rubro}</td>
+              <td>
+                {producto.imagen ? (
+                  <img src={producto.imagen} alt={producto.nombre} style={{ width: '50px', height: '50px' }} />
+                ) : (
+                  "Sin imagen"
+                )}
+              </td>
               <td>
                 <button onClick={() => handleEdit(producto)}>Editar</button>
                 <button onClick={() => handleDelete(producto.codigo_barras)}>Eliminar</button>
