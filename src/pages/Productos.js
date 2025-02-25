@@ -9,6 +9,7 @@ const Productos = () => {
     precio: '',
     stock: '',
     id_rubro: '',
+    imagen_url: '',
   });
   const [editing, setEditing] = useState(false);
 
@@ -111,7 +112,7 @@ const Productos = () => {
         />
         <input
           type="text"
-          name="imagen"
+          name="imagen_url"
           placeholder="URL de la Imagen"
           value={formData.imagen}
           onChange={handleInputChange}
@@ -139,7 +140,7 @@ const Productos = () => {
               <td>{producto.stock}</td>
               <td>{producto.id_rubro}</td>
               <td>
-                {producto.imagen ? (
+                {producto.imagen_url ? (
                   <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '50px', height: '50px' }} />
                 ) : (
                   "Sin imagen"
