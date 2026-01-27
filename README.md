@@ -64,3 +64,21 @@ pnpm dev
 
 👤 Autor
 Marcos Martin Tecnico Superior en Desarrollo de Software, enfocado en soluciones eficientes.
+
+<img width="1909" height="883" alt="image" src="https://github.com/user-attachments/assets/a4931d82-708d-4c33-9482-814a088675d5" />
+
+<img width="1903" height="911" alt="image" src="https://github.com/user-attachments/assets/97ae3c8c-82d6-4c88-a458-9d8beb66120f" />
+
+<img width="1904" height="909" alt="image" src="https://github.com/user-attachments/assets/5a22d2fe-66ad-40ea-94f8-9797230e7d52" />
+
+<img width="1917" height="739" alt="image" src="https://github.com/user-attachments/assets/7f1a7b2b-2327-4abf-baaa-d5d23dd9d88a" />
+
+<img width="1905" height="911" alt="image" src="https://github.com/user-attachments/assets/3f0020f5-fdbd-4be2-9204-1c605490fe76" />
+
+<img width="1905" height="912" alt="image" src="https://github.com/user-attachments/assets/145872f7-4705-4f4d-8b09-73d001c4840c" /> 
+
+
+
+
+
+
