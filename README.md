@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# 🛒 Super Mitre | Frontend Web
+> **Sistema de Gestión y Punto de Venta Profesional para Supermercados.**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+## 💻 Tecnologías Core
 
-In the project directory, you can run:
+| Frontend Framework | Styling & UI | Build Tool | Package Manager |
+| :---: | :---: | :---: | :---: |
+| ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) | ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | ![pnpm](https://img.shields.io/badge/pnpm-4a4a4a?style=for-the-badge&logo=pnpm&logoColor=f69220) |
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 📌 Descripción del Proyecto
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Este repositorio contiene la interfaz de usuario del ecosistema **Super Mitre**. Es una Single Page Application (SPA) diseñada para ofrecer una experiencia fluida y rápida, ideal para entornos de alta rotación como la caja de un supermercado.
 
-### `npm test`
+### 🌟 Funcionalidades Destacadas
+* **POS (Point of Sale):** Gestión de ventas con carga dinámica de productos.
+* **Admin Dashboard:** Control total sobre el inventario, precios y categorías.
+* **Auth System:** Manejo de sesiones seguras mediante JWT.
+* **Responsive Design:** Adaptabilidad garantizada para pantallas de escritorio y tablets.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🛠️ Stack Técnico Detallado
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **Estado Global:** React Context API para manejo de carrito y autenticación.
+* **Comunicación:** Axios con interceptores para inyección automática de tokens.
+* **Ruteo:** React Router para una navegación fluida entre módulos.
+* **Arquitectura:** Organización por capas (Services, Hooks, Components).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📂 Estructura de Carpetas
 
-### `npm run eject`
+```text
+src/
+ ├── components/    # Componentes atómicos y reutilizables
+ ├── views/         # Vistas principales de la aplicación
+ ├── hooks/         # Lógica de negocio (Custom Hooks)
+ ├── services/      # Abstracción de llamadas a la API
+ └── context/       # Estado global (Auth & Cart)
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+🚀 Instalación y Uso
+Sigue estos pasos para levantar el proyecto localmente:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Clonar el repositorio
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+git clone [https://github.com/MarcosMartinProgram/FrontendAppSuperMitre.git](https://github.com/MarcosMartinProgram/FrontendAppSuperMitre.git)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2. Instalar dependencias
 
-## Learn More
+pnpm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. Configurar el entorno Crea un archivo .env en la raíz con la URL de tu API:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+VITE_API_URL=http://localhost:5000/api
 
-### Code Splitting
+4. Correr el proyecto
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+pnpm dev
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+👤 Autor
+Marcos Martin Tecnico Superior en Desarrollo de Software, enfocado en soluciones eficientes.
