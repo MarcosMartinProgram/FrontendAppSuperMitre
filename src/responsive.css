@@ -1,0 +1,97 @@
+/* ===== GLOBAL RESPONSIVE ===== */
+
+/* Navbar */
+@media (max-width: 600px) {
+  nav > div {
+    padding: 0 0.75rem !important;
+  }
+  nav .navbar-links {
+    gap: 0 !important;
+  }
+  nav .navbar-links a {
+    padding: 0.375rem 0.4rem !important;
+    font-size: 0.75rem !important;
+  }
+  nav .navbar-links button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.6875rem !important;
+  }
+}
+
+/* Home */
+@media (max-width: 600px) {
+  .home-hero {
+    padding: 2rem 1rem 1.5rem !important;
+  }
+  .home-hero h1 {
+    font-size: 1.5rem !important;
+  }
+  .home-features {
+    grid-template-columns: 1fr !important;
+    padding: 0 1rem 2rem !important;
+  }
+}
+
+/* Ventas */
+@media (max-width: 900px) {
+  .ventas-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .ventas-right {
+    position: static !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .ventas-header {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+  }
+  .ventas-header-right {
+    justify-content: space-between !important;
+  }
+}
+
+/* GestionProductos */
+@media (max-width: 900px) {
+  .gestion-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .gestion-form {
+    position: static !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .gestion-input-row {
+    flex-direction: column !important;
+  }
+}
+
+/* CuentasCorrientes */
+@media (max-width: 900px) {
+  .cc-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .cc-header {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  .cc-search-row {
+    flex-direction: column !important;
+  }
+  .cc-form-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Table horizontal scroll on mobile */
+@media (max-width: 600px) {
+  table {
+    font-size: 0.75rem;
+  }
+}

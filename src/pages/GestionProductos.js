@@ -1,209 +1,271 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useProducts } from '../hooks/useProducts';
+import { rubrosAPI } from '../services/api';
 
 const GestionProductos = () => {
-  const [productos, setProductos] = useState([]);
-  const [nuevoProducto, setNuevoProducto] = useState({
+  const navigate = useNavigate();
+  const { productos, fetchProductos, addProducto, updateProducto, deleteProducto } = useProducts();
+  const [rubros, setRubros] = useState([]);
+  const [form, setForm] = useState({
     codigo_barras: '',
     nombre: '',
     precio: '',
+    precio_lista2: '',
     stock: '',
     id_rubro: '',
     descripcion: '',
   });
-  const [editarProducto, setEditarProducto] = useState(null);
-  const navigate = useNavigate();
+  const [editando, setEditando] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
 
-  // Obtener todos los productos
   useEffect(() => {
-    const obtenerProductos = async () => {
-      try {
-        const response = await axios.get('https://cacmarcos.alwaysdata.net/api/productos');
-        setProductos(response.data);
-      } catch (error) {
-        console.error('Error al obtener los productos:', error);
+    fetchProductos();
+    rubrosAPI.getAll()
+      .then(({ data }) => setRubros(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [fetchProductos]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editando) {
+        await updateProducto(editando.codigo_barras, form);
+        setEditando(null);
+      } else {
+        await addProducto(form);
       }
-    };
-
-    obtenerProductos();
-  }, []);
-
-  // Agregar un nuevo producto
-  const agregarProducto = async () => {
-    try {
-      await axios.post('https://cacmarcos.alwaysdata.net/api/productos', nuevoProducto);
-      setNuevoProducto({
-        codigo_barras: '',
-        nombre: '',
-        precio: '',
-        stock: '',
-        id_rubro: '',
-        descripcion: '',
-      });
-      // Actualizar la lista de productos
-      const response = await axios.get('https://cacmarcos.alwaysdata.net/api/productos');
-      setProductos(response.data);
-    } catch (error) {
-      console.error('Error al agregar el producto:', error);
+      setForm({ codigo_barras: '', nombre: '', precio: '', precio_lista2: '', stock: '', id_rubro: '', descripcion: '' });
+    } catch (err) {
+      alert('Error al guardar: ' + err.message);
     }
   };
 
-  // Eliminar un producto
-  const eliminarProducto = async (codigo_barras) => {
-    try {
-      await axios.delete(`https://cacmarcos.alwaysdata.net/api/productos/${codigo_barras}`);
-      // Actualizar la lista de productos
-      const response = await axios.get('https://cacmarcos.alwaysdata.net/api/productos');
-      setProductos(response.data);
-    } catch (error) {
-      console.error('Error al eliminar el producto:', error);
+  const handleEdit = (producto) => {
+    setForm(producto);
+    setEditando(producto);
+  };
+
+  const handleDelete = async (codigo) => {
+    if (window.confirm('¿Eliminar este producto?')) {
+      await deleteProducto(codigo);
     }
   };
 
-  // Editar un producto
-  const editar = (producto) => {
-    setEditarProducto(producto);
-  };
-
-  const guardarEdicion = async () => {
-    try {
-      await axios.put(`https://cacmarcos.alwaysdata.net/api/productos/${editarProducto.codigo_barras}`, editarProducto);
-      setEditarProducto(null);
-      // Actualizar la lista de productos
-      const response = await axios.get('https://cacmarcos.alwaysdata.net/api/productos');
-      setProductos(response.data);
-    } catch (error) {
-      console.error('Error al editar el producto:', error);
-    }
-  };
+  const productosFiltrados = productos.filter((p) =>
+    p.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    String(p.codigo_barras).includes(busqueda)
+  );
 
   return (
-    <div style={styles.container}>
-      <h1>Gestión de Productos</h1>
-      <button onClick={() => navigate('/panel')} style={styles.button}>
-        Volver al Panel Principal
-      </button>
-
-      {/* Formulario para agregar un nuevo producto */}
-      <div style={styles.form}>
-        <h2>Agregar Nuevo Producto</h2>
-        <input
-          type="text"
-          placeholder="Código de Barras"
-          value={nuevoProducto.codigo_barras}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, codigo_barras: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={nuevoProducto.nombre}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Precio"
-          value={nuevoProducto.precio}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, precio: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Stock"
-          value={nuevoProducto.stock}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, stock: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="ID Rubro"
-          value={nuevoProducto.id_rubro}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, id_rubro: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Descripción"
-          value={nuevoProducto.descripcion}
-          onChange={(e) => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })}
-        />
-        <button onClick={agregarProducto}>Agregar Producto</button>
-      </div>
-
-      {/* Lista de productos */}
-      <div style={styles.lista}>
-        <h2>Lista de Productos</h2>
-        {productos.map((producto) => (
-          <div key={producto.codigo_barras} style={styles.producto}>
-            <p>{producto.nombre} - ${producto.precio}</p>
-            <button onClick={() => eliminarProducto(producto.codigo_barras)}>Eliminar</button>
-            <button onClick={() => editar(producto)}>Editar</button>
-          </div>
-        ))}
-      </div>
-
-      {/* Formulario de edición */}
-      {editarProducto && (
-        <div style={styles.form}>
-          <h2>Editar Producto</h2>
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={editarProducto.nombre}
-            onChange={(e) => setEditarProducto({ ...editarProducto, nombre: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder="Precio"
-            value={editarProducto.precio}
-            onChange={(e) => setEditarProducto({ ...editarProducto, precio: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder="Stock"
-            value={editarProducto.stock}
-            onChange={(e) => setEditarProducto({ ...editarProducto, stock: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder="ID Rubro"
-            value={editarProducto.id_rubro}
-            onChange={(e) => setEditarProducto({ ...editarProducto, id_rubro: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Descripción"
-            value={editarProducto.descripcion}
-            onChange={(e) => setEditarProducto({ ...editarProducto, descripcion: e.target.value })}
-          />
-          <button onClick={guardarEdicion}>Guardar Cambios</button>
-          <button onClick={() => setEditarProducto(null)}>Cancelar</button>
+    <div style={styles.page} className="gestion-page">
+      <div style={styles.header}>
+        <div>
+          <h1 style={styles.title}>Gestión de Productos</h1>
+          <p style={styles.subtitle}>{productos.length} productos registrados</p>
         </div>
-      )}
+        <button onClick={() => navigate('/panel')} style={styles.backBtn}>← Panel</button>
+      </div>
+
+      <div style={styles.layout} className="gestion-layout">
+        <div style={styles.formCard} className="gestion-form">
+          <h3 style={styles.cardTitle}>{editando ? 'Editar Producto' : 'Nuevo Producto'}</h3>
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <input
+              type="text"
+              placeholder="Código de barras"
+              value={form.codigo_barras}
+              onChange={(e) => setForm({ ...form, codigo_barras: e.target.value })}
+              style={styles.input}
+              required
+              disabled={!!editando}
+            />
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={form.nombre}
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+              style={styles.input}
+              required
+            />
+            <div style={styles.inputRow} className="gestion-input-row">
+              <input
+                type="number"
+                placeholder="Precio lista 1"
+                value={form.precio}
+                onChange={(e) => {
+                  const precio = e.target.value;
+                  const precioL2 = precio ? Math.ceil(parseFloat(precio) * 1.05) : '';
+                  setForm({ ...form, precio, precio_lista2: precioL2 });
+                }}
+                style={styles.input}
+                required
+              />
+              <input
+                type="number"
+                placeholder="Precio lista 2"
+                value={form.precio_lista2}
+                onChange={(e) => setForm({ ...form, precio_lista2: e.target.value })}
+                style={styles.input}
+                required
+              />
+            </div>
+            <div style={styles.inputRow} className="gestion-input-row">
+              <input
+                type="number"
+                placeholder="Stock"
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                style={styles.input}
+                required
+              />
+              <select
+                value={form.id_rubro}
+                onChange={(e) => setForm({ ...form, id_rubro: e.target.value })}
+                style={styles.input}
+                required
+              >
+                <option value="">Seleccionar rubro</option>
+                {rubros.map((r) => (
+                  <option key={r.id_rubro} value={r.id_rubro}>{r.nombre}</option>
+                ))}
+              </select>
+            </div>
+            <input
+              type="text"
+              placeholder="Descripción"
+              value={form.descripcion}
+              onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+              style={styles.input}
+            />
+            <div style={styles.formBtns}>
+              <button type="submit" style={styles.primaryBtn}>
+                {editando ? 'Guardar Cambios' : 'Agregar'}
+              </button>
+              {editando && (
+                <button type="button" onClick={() => { setEditando(null); setForm({ codigo_barras: '', nombre: '', precio: '', precio_lista2: '', stock: '', id_rubro: '', descripcion: '' }); }} style={styles.secondaryBtn}>
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        <div style={styles.listCard}>
+          <div style={styles.listHeader}>
+            <h3 style={styles.cardTitle}>Productos</h3>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              style={styles.searchInput}
+            />
+          </div>
+          <div style={styles.tableWrap}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Código</th>
+                  <th style={styles.th}>Nombre</th>
+                  <th style={styles.th}>P. Lista 1</th>
+                  <th style={styles.th}>P. Lista 2</th>
+                  <th style={styles.th}>Stock</th>
+                  <th style={styles.th}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productosFiltrados.map((p) => (
+                  <tr key={p.codigo_barras} style={styles.tr}>
+                    <td style={styles.td}>{p.codigo_barras}</td>
+                    <td style={styles.td}>{p.nombre}</td>
+                    <td style={styles.td}>${parseFloat(p.precio).toFixed(2)}</td>
+                    <td style={styles.td}>${parseFloat(p.precio_lista2 || 0).toFixed(2)}</td>
+                    <td style={styles.td}>{p.stock}</td>
+                    <td style={styles.td}>
+                      <div style={styles.actions}>
+                        <button onClick={() => handleEdit(p)} style={styles.editBtn}>Editar</button>
+                        <button onClick={() => handleDelete(p.codigo_barras)} style={styles.deleteBtn}>Eliminar</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    padding: '2rem',
+  page: {
+    padding: '1rem 1.5rem',
   },
-  form: {
-    marginBottom: '2rem',
-  },
-  lista: {
-    marginTop: '2rem',
-  },
-  producto: {
+  header: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '1rem',
+    alignItems: 'flex-start',
+    marginBottom: '1.5rem',
   },
-  button: {
-    marginBottom: '1rem',
-    padding: '0.5rem',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', margin: 0 },
+  subtitle: { fontSize: '0.875rem', color: '#737373', marginTop: '0.25rem' },
+  backBtn: {
+    padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e5e5',
+    background: 'white', color: '#525252', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer',
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: '380px 1fr',
+    gap: '1.5rem',
+    alignItems: 'start',
+  },
+  formCard: {
+    background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem',
+    position: 'sticky', top: '72px',
+  },
+  listCard: {
+    background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem',
+  },
+  cardTitle: { fontSize: '0.875rem', fontWeight: '600', color: '#404040', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.025em' },
+  form: { display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden' },
+  inputRow: { display: 'flex', gap: '0.5rem', overflow: 'hidden' },
+  input: {
+    flex: 1, padding: '0.625rem 0.875rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem',
+    fontSize: '0.8125rem', outline: 'none', background: '#fafafa', minWidth: 0,
+  },
+  formBtns: { display: 'flex', gap: '0.5rem', marginTop: '0.25rem' },
+  primaryBtn: {
+    flex: 1, padding: '0.625rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+    color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer',
+  },
+  secondaryBtn: {
+    flex: 1, padding: '0.625rem', background: 'white', color: '#525252',
+    border: '1px solid #e5e5e5', borderRadius: '0.5rem', fontWeight: '500', fontSize: '0.8125rem', cursor: 'pointer',
+  },
+  listHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
+  searchInput: {
+    padding: '0.5rem 0.75rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem',
+    fontSize: '0.8125rem', outline: 'none', width: '200px',
+  },
+  tableWrap: { overflowX: 'auto' },
+  table: { width: '100%', borderCollapse: 'collapse' },
+  th: {
+    textAlign: 'left', padding: '0.625rem 0.75rem', fontSize: '0.75rem', fontWeight: '600',
+    color: '#737373', textTransform: 'uppercase', letterSpacing: '0.05em',
+    borderBottom: '2px solid #e5e5e5',
+  },
+  tr: { borderBottom: '1px solid #f5f5f5' },
+  td: { padding: '0.625rem 0.75rem', fontSize: '0.8125rem', color: '#404040' },
+  actions: { display: 'flex', gap: '0.375rem' },
+  editBtn: {
+    padding: '0.25rem 0.5rem', background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0',
+    borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer',
+  },
+  deleteBtn: {
+    padding: '0.25rem 0.5rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca',
+    borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer',
   },
 };
 
