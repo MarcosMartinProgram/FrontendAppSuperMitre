@@ -12,7 +12,9 @@ import Navbar from './components/Navbar';
 import GestionProductos from './pages/GestionProductos';
 import RegistrarVentas from './pages/RegistrarVentas';
 import Reportes from './pages/Reportes';
-import './App.css'; 
+import CuentasCorrientes from './pages/CuentasCorrientes';
+import './App.css';
+import './responsive.css'; 
 import Footer from "./components/Footer";
 // Función para verificar si el usuario tiene acceso
 const PrivateRoute = ({ element, allowedRoles }) => {
@@ -68,9 +70,10 @@ const App = () => {
           path="/ventas"
           element={<PrivateRoute element={<Ventas />} allowedRoles={['vendedor']} />}
         />
-        <Route path="/gestion-productos" element={<PrivateRoute element={<GestionProductos />} />} allowedRoles={['master']} />
-        <Route path="/registrar-ventas" element={<PrivateRoute element={<RegistrarVentas />} />} allowedRoles={['master']} />
-        <Route path="/reportes" element={<PrivateRoute element={<Reportes />} />} allowedRoles={['master']} />
+        <Route path="/gestion-productos" element={<PrivateRoute element={<GestionProductos />} allowedRoles={['master']} />} />
+        <Route path="/registrar-ventas" element={<PrivateRoute element={<RegistrarVentas />} allowedRoles={['master']} />} />
+        <Route path="/reportes" element={<PrivateRoute element={<Reportes />} allowedRoles={['master']} />} />
+        <Route path="/cuentas-corrientes" element={<PrivateRoute element={<CuentasCorrientes />} allowedRoles={['master', 'vendedor']} />} />
       </Routes>
       <Footer />
     </Router>
