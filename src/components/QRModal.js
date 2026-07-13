@@ -9,7 +9,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   const [qrData, setQrData] = useState(null);
   const [orderId, setOrderId] = useState(null);
   const [paymentId, setPaymentId] = useState(null);
-  const [estado, setEstado] = useState('creando');
+  const [estado, setEstado] = useState('datos_cliente');
   const [error, setError] = useState(null);
   const [tiempoRestante, setTiempoRestante] = useState(900);
   const pollingRef = useRef(null);
@@ -18,7 +18,11 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   const overlayRef = useRef(null);
   const qrRef = useRef(null);
 
-  const crearOrden = useCallback(async () => {
+  const [clienteNombre, setClienteNombre] = useState('');
+  const [clienteTelefono, setClienteTelefono] = useState('');
+  const [clienteDireccion, setClienteDireccion] = useState('');
+
+  const crearOrden = useCallback(async (datosCliente) => {
     try {
       setEstado('creando');
       setError(null);
@@ -65,12 +69,11 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
         { scale: 1, y: 0, autoAlpha: 1, duration: 0.5, ease: 'back.out(1.4)' }
       );
     }
-    crearOrden();
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [crearOrden]);
+  }, []);
 
   useEffect(() => {
     if (qrRef.current && estado === 'esperando_pago') {
@@ -106,6 +109,9 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
               order_id: orderId,
               payment_id: paymentId,
               total: total,
+              cliente_nombre: clienteNombre || null,
+              cliente_telefono: clienteTelefono || null,
+              cliente_direccion: clienteDireccion || null,
               productos: productos.map(p => ({
                 nombre: p.nombre,
                 precio: p.precio_venta || p.precio,
@@ -157,6 +163,32 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
     }
   }, [estado]);
 
+  const handleGenerarQR = () => {
+    if (!clienteNombre.trim()) return;
+    crearOrden();
+  };
+
+  const handleNombreKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('qr-telefono')?.focus();
+    }
+  };
+
+  const handleTelefonoKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('qr-direccion')?.focus();
+    }
+  };
+
+  const handleDireccionKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleGenerarQR();
+    }
+  };
+
   const cancelar = async () => {
     if (orderId) {
       try {
@@ -187,6 +219,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   };
 
   const estadoColor = {
+    datos_cliente: '#1294F2',
     creando: '#FFC107',
     esperando_pago: '#1294F2',
     aprobado: '#1FB954',
@@ -196,6 +229,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   };
 
   const estadoLabel = {
+    datos_cliente: 'Tus datos para el pedido',
     creando: 'Generando QR...',
     esperando_pago: 'Escaneá el código QR',
     aprobado: '¡Pago aprobado!',
@@ -225,6 +259,48 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
             </span>
           </div>
 
+          {estado === 'datos_cliente' && (
+            <div style={styles.formContainer}>
+              <input
+                type="text"
+                placeholder="Nombre *"
+                value={clienteNombre}
+                onChange={(e) => setClienteNombre(e.target.value)}
+                onKeyDown={handleNombreKeyDown}
+                style={styles.input}
+                autoFocus
+              />
+              <input
+                id="qr-telefono"
+                type="tel"
+                placeholder="WhatsApp"
+                value={clienteTelefono}
+                onChange={(e) => setClienteTelefono(e.target.value)}
+                onKeyDown={handleTelefonoKeyDown}
+                style={styles.input}
+              />
+              <input
+                id="qr-direccion"
+                type="text"
+                placeholder="Dirección (opcional)"
+                value={clienteDireccion}
+                onChange={(e) => setClienteDireccion(e.target.value)}
+                onKeyDown={handleDireccionKeyDown}
+                style={styles.input}
+              />
+              <button
+                onClick={handleGenerarQR}
+                disabled={!clienteNombre.trim()}
+                style={{
+                  ...styles.generarBtn,
+                  opacity: clienteNombre.trim() ? 1 : 0.5,
+                }}
+              >
+                Generar QR
+              </button>
+            </div>
+          )}
+
           {estado === 'creando' && (
             <div style={styles.spinner}>⏳</div>
           )}
@@ -253,6 +329,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
             <div style={styles.successBox}>
               <span style={styles.successIcon}>✓</span>
               <p style={styles.successText}>¡Pago confirmado!</p>
+              {clienteNombre && <p style={styles.successDetail}>Pedido a nombre de {clienteNombre}</p>}
             </div>
           )}
 
@@ -265,14 +342,14 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
           {estado === 'expirado' && (
             <div style={styles.expiredBox}>
               <p style={styles.expiredText}>El código QR expiró</p>
-              <button onClick={crearOrden} style={styles.retryBtn}>Generar nuevo QR</button>
+              <button onClick={() => setEstado('datos_cliente')} style={styles.retryBtn}>Generar nuevo QR</button>
             </div>
           )}
 
           {estado === 'error' && (
             <div style={styles.errorBox}>
               <p style={styles.errorText}>{error}</p>
-              <button onClick={crearOrden} style={styles.retryBtn}>Reintentar</button>
+              <button onClick={() => setEstado('datos_cliente')} style={styles.retryBtn}>Reintentar</button>
             </div>
           )}
         </div>
@@ -321,6 +398,18 @@ const styles = {
   },
   estadoDot: { width: '10px', height: '10px', borderRadius: '50%' },
   estadoTexto: { fontSize: '0.875rem', fontWeight: '600' },
+  formContainer: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
+  input: {
+    width: '100%', padding: '0.75rem 1rem', border: '1px solid #E6EDF5',
+    borderRadius: '12px', fontSize: '0.9375rem', color: '#273444',
+    outline: 'none', boxSizing: 'border-box',
+    transition: 'border-color 0.2s',
+  },
+  generarBtn: {
+    width: '100%', padding: '0.75rem', background: 'linear-gradient(180deg, #24A2FF, #0076E6)',
+    color: 'white', border: 'none', borderRadius: '14px', fontWeight: '600',
+    fontSize: '0.9375rem', cursor: 'pointer', marginTop: '0.25rem',
+  },
   spinner: { fontSize: '3rem', margin: '1rem 0' },
   qrContainer: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' },
   qrHint: { fontSize: '0.75rem', color: '#667085', marginTop: '0.5rem' },
@@ -336,6 +425,7 @@ const styles = {
     display: 'block', marginBottom: '0.5rem'
   },
   successText: { fontSize: '1.125rem', fontWeight: '600', color: '#1FB954', margin: 0 },
+  successDetail: { fontSize: '0.8125rem', color: '#667085', marginTop: '0.5rem' },
   errorBox: { padding: '1.5rem 0' },
   errorText: { fontSize: '0.875rem', color: '#E53935', margin: 0 },
   expiredBox: { padding: '1.5rem 0' },
