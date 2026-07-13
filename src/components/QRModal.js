@@ -141,6 +141,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (timerRef.current) clearInterval(timerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, orderId, paymentId, onPagoAprobado]);
 
   useEffect(() => {
