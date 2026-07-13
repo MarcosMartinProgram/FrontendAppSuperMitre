@@ -13,6 +13,8 @@ import GestionProductos from './pages/GestionProductos';
 import RegistrarVentas from './pages/RegistrarVentas';
 import Reportes from './pages/Reportes';
 import CuentasCorrientes from './pages/CuentasCorrientes';
+import PaymentResult from './pages/PaymentResult';
+import PedidosOnline from './pages/PedidosOnline';
 import './App.css';
 import './responsive.css'; 
 import Footer from "./components/Footer";
@@ -74,6 +76,12 @@ const App = () => {
         <Route path="/registrar-ventas" element={<PrivateRoute element={<RegistrarVentas />} allowedRoles={['master']} />} />
         <Route path="/reportes" element={<PrivateRoute element={<Reportes />} allowedRoles={['master']} />} />
         <Route path="/cuentas-corrientes" element={<PrivateRoute element={<CuentasCorrientes />} allowedRoles={['master', 'vendedor']} />} />
+        <Route path="/pedidos-online" element={<PrivateRoute element={<PedidosOnline />} allowedRoles={['master']} />} />
+        
+        {/* Payment result pages (public - MP redirects here) */}
+        <Route path="/payment-success" element={<PaymentResult />} />
+        <Route path="/payment-failure" element={<PaymentResult />} />
+        <Route path="/payment-pending" element={<PaymentResult />} />
       </Routes>
       <Footer />
     </Router>

@@ -19,6 +19,9 @@
 }
 
 /* Home */
+@media (max-width: 768px) {
+  .cat-card { grid-column: span 2 !important; }
+}
 @media (max-width: 600px) {
   .home-hero {
     padding: 2rem 1rem 1.5rem !important;
@@ -85,6 +88,13 @@
     flex-direction: column !important;
   }
   .cc-form-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tienda */
+@media (max-width: 768px) {
+  .tienda-layout {
     grid-template-columns: 1fr !important;
   }
 }

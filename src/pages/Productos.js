@@ -108,33 +108,33 @@ const Productos = () => {
 
 const styles = {
   page: { padding: '1.5rem', maxWidth: '1100px', margin: '0 auto' },
-  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', marginBottom: '1.5rem' },
-  formCard: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem', marginBottom: '1.5rem' },
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#273444', marginBottom: '1.5rem' },
+  formCard: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem', marginBottom: '1.5rem' },
   form: { display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' },
   input: {
-    flex: '1 1 180px', padding: '0.625rem 0.875rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem',
+    flex: '1 1 180px', padding: '0.625rem 0.875rem', border: '1px solid #E6EDF5', borderRadius: '14px',
     fontSize: '0.8125rem', outline: 'none',
   },
   primaryBtn: {
-    padding: '0.625rem 1.25rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-    color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer',
+    padding: '0.625rem 1.25rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)',
+    color: 'white', border: 'none', borderRadius: '14px', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer',
     flex: '0 0 auto',
   },
-  tableCard: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem', overflowX: 'auto' },
+  tableCard: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem', overflowX: 'auto' },
   table: { width: '100%', borderCollapse: 'collapse' },
   th: {
     textAlign: 'left', padding: '0.625rem 0.75rem', fontSize: '0.75rem', fontWeight: '600',
-    color: '#737373', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #e5e5e5',
+    color: '#667085', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E6EDF5',
   },
-  tr: { borderBottom: '1px solid #f5f5f5' },
-  td: { padding: '0.625rem 0.75rem', fontSize: '0.8125rem', color: '#404040' },
+  tr: { borderBottom: '1px solid #E6EDF5' },
+  td: { padding: '0.625rem 0.75rem', fontSize: '0.8125rem', color: '#273444' },
   actions: { display: 'flex', gap: '0.375rem' },
   editBtn: {
-    padding: '0.25rem 0.5rem', background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0',
+    padding: '0.25rem 0.5rem', background: '#E8F4FD', color: '#1294F2', border: '1px solid #D0ECFF',
     borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer',
   },
   deleteBtn: {
-    padding: '0.25rem 0.5rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca',
+    padding: '0.25rem 0.5rem', background: '#fef2f2', color: '#E53935', border: '1px solid #fecaca',
     borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer',
   },
 };

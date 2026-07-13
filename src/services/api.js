@@ -67,4 +67,15 @@ export const reportesAPI = {
   get: (tipo) => api.get(`/api/reportes/${tipo}`),
 };
 
+export const mpAPI = {
+  crearPreferencia: (carrito) => api.post('/api/mercadopago/crear-preferencia', { carrito }),
+};
+
+export const pedidosOnlineAPI = {
+  getAll: (estado) => api.get('/api/pedidos-online', { params: estado ? { estado } : {} }),
+  getById: (id) => api.get(`/api/pedidos-online/${id}`),
+  updateEstado: (id, estado) => api.put(`/api/pedidos-online/${id}/estado`, { estado }),
+  reenviarWhatsApp: (id) => api.post(`/api/pedidos-online/${id}/reenviar-whatsapp`),
+};
+
 export default api;

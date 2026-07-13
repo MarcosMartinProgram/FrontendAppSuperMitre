@@ -100,11 +100,11 @@ const styles = {
     alignItems: 'flex-start',
     marginBottom: '1.5rem',
   },
-  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', margin: 0 },
-  subtitle: { fontSize: '0.875rem', color: '#737373', marginTop: '0.25rem' },
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#273444', margin: 0 },
+  subtitle: { fontSize: '0.875rem', color: '#667085', marginTop: '0.25rem' },
   backBtn: {
-    padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e5e5',
-    background: 'white', color: '#525252', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer',
+    padding: '0.5rem 1rem', borderRadius: '14px', border: '1px solid #E6EDF5',
+    background: 'white', color: '#667085', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer',
   },
   layout: {
     display: 'grid',
@@ -113,42 +113,42 @@ const styles = {
     alignItems: 'start',
   },
   formCard: {
-    background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem',
+    background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem',
   },
   listCard: {
-    background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem',
+    background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem',
   },
   cardTitle: {
-    fontSize: '0.875rem', fontWeight: '600', color: '#404040', marginBottom: '1rem',
+    fontSize: '0.875rem', fontWeight: '600', color: '#273444', marginBottom: '1rem',
     textTransform: 'uppercase', letterSpacing: '0.025em',
   },
   error: {
-    background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626',
+    background: '#fef2f2', border: '1px solid #fecaca', color: '#E53935',
     padding: '0.5rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.8125rem', marginBottom: '0.75rem',
   },
   success: {
-    background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#16a34a',
+    background: '#E8F4FD', border: '1px solid #D0ECFF', color: '#1294F2',
     padding: '0.5rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.8125rem', marginBottom: '0.75rem',
   },
   form: { display: 'flex', gap: '0.5rem' },
   input: {
-    flex: 1, padding: '0.625rem 0.875rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem',
+    flex: 1, padding: '0.625rem 0.875rem', border: '1px solid #E6EDF5', borderRadius: '14px',
     fontSize: '0.875rem', outline: 'none',
   },
   primaryBtn: {
-    padding: '0.625rem 1.25rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-    color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer',
+    padding: '0.625rem 1.25rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)',
+    color: 'white', border: 'none', borderRadius: '14px', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer',
   },
-  empty: { color: '#a3a3a3', fontSize: '0.875rem', textAlign: 'center', padding: '1.5rem' },
+  empty: { color: '#667085', fontSize: '0.875rem', textAlign: 'center', padding: '1.5rem' },
   list: { display: 'flex', flexDirection: 'column', gap: '0.375rem' },
   listItem: {
     display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem',
-    borderRadius: '0.5rem', background: '#fafafa', border: '1px solid #f5f5f5',
+    borderRadius: '14px', background: '#F5F8FC', border: '1px solid #E6EDF5',
   },
   rubroDot: {
-    width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', flexShrink: 0,
+    width: '8px', height: '8px', borderRadius: '50%', background: '#1294F2', flexShrink: 0,
   },
-  rubroName: { fontSize: '0.875rem', color: '#404040', fontWeight: '500' },
+  rubroName: { fontSize: '0.875rem', color: '#273444', fontWeight: '500' },
 };
 
 export default Rubros;

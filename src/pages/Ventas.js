@@ -25,6 +25,7 @@ const Ventas = () => {
   const [entregaEfectivo, setEntregaEfectivo] = useState(0);
   const [whatsappData, setWhatsappData] = useState(null);
   const listaRef = useRef(null);
+  const lineIdCounter = useRef(1);
 
   useEffect(() => {
     if (listaRef.current) {
@@ -63,7 +64,9 @@ const Ventas = () => {
       ? parseFloat(producto.precio_lista2 || producto.precio)
       : parseFloat(producto.precio);
     setProductosVenta((prev) => {
-      const existente = prev.find((p) => p.codigo_barras === producto.codigo_barras);
+      const existente = producto.es_variable
+        ? null
+        : prev.find((p) => p.codigo_barras === producto.codigo_barras);
       let nuevos;
       if (existente) {
         nuevos = prev.map((p) =>
@@ -72,7 +75,7 @@ const Ventas = () => {
             : p
         );
       } else {
-        nuevos = [...prev, { ...producto, cantidad: 1, precio_venta: precioVenta }];
+        nuevos = [...prev, { ...producto, cantidad: 1, precio_venta: precioVenta, lineId: lineIdCounter.current++ }];
       }
       recalcularTotal(nuevos, descuento);
       return nuevos;
@@ -113,29 +116,29 @@ const Ventas = () => {
     setResultadosBusqueda([]);
   }, [agregarProducto]);
 
-  const cambiarCantidad = useCallback((cod, nuevaCantidad) => {
+  const cambiarCantidad = useCallback((lineId, nuevaCantidad) => {
     setProductosVenta((prev) => {
       const actualizados = prev.map((p) =>
-        p.codigo_barras === cod ? { ...p, cantidad: Math.max(1, nuevaCantidad) } : p
+        p.lineId === lineId ? { ...p, cantidad: Math.max(1, nuevaCantidad) } : p
       );
       recalcularTotal(actualizados, descuento);
       return actualizados;
     });
   }, [descuento, recalcularTotal]);
 
-  const cambiarPrecio = useCallback((cod, nuevoPrecio) => {
+  const cambiarPrecio = useCallback((lineId, nuevoPrecio) => {
     setProductosVenta((prev) => {
       const actualizados = prev.map((p) =>
-        p.codigo_barras === cod ? { ...p, precio_venta: parseFloat(nuevoPrecio) || 0 } : p
+        p.lineId === lineId ? { ...p, precio_venta: parseFloat(nuevoPrecio) || 0 } : p
       );
       recalcularTotal(actualizados, descuento);
       return actualizados;
     });
   }, [descuento, recalcularTotal]);
 
-  const eliminarProducto = useCallback((cod) => {
+  const eliminarProducto = useCallback((lineId) => {
     setProductosVenta((prev) => {
-      const filtrados = prev.filter((p) => p.codigo_barras !== cod);
+      const filtrados = prev.filter((p) => p.lineId !== lineId);
       recalcularTotal(filtrados, descuento);
       return filtrados;
     });
@@ -492,23 +495,23 @@ const Ventas = () => {
                 {productosVenta.map((p, i) => {
                   const precio = precioProducto(p);
                   return (
-                    <div key={i} style={styles.bigProductRow}>
+                    <div key={p.lineId} style={styles.bigProductRow}>
                       <div style={styles.bigProductInfo}>
                         <span style={styles.bigProductName}>{p.nombre}</span>
                         <div style={styles.bigProductMeta}>
                           {p.es_variable && <span style={styles.variableBadge}>variable</span>}
                           <input type="number" min="0" step="0.01" value={p.precio_venta || p.precio}
-                            onChange={(e) => cambiarPrecio(p.codigo_barras, e.target.value)}
+                            onChange={(e) => cambiarPrecio(p.lineId, e.target.value)}
                             style={styles.priceInput} />
                           <span style={styles.xLabel}>x</span>
                           <input type="number" min="1" value={p.cantidad}
-                            onChange={(e) => cambiarCantidad(p.codigo_barras, parseInt(e.target.value) || 1)}
+                            onChange={(e) => cambiarCantidad(p.lineId, parseInt(e.target.value) || 1)}
                             style={styles.qtyInput} />
                         </div>
                       </div>
                       <div style={styles.bigProductRight}>
                         <span style={styles.bigProductSubtotal}>${(precio * p.cantidad).toFixed(2)}</span>
-                        <button onClick={() => eliminarProducto(p.codigo_barras)} style={styles.removeBtn}>✕</button>
+                        <button onClick={() => eliminarProducto(p.lineId)} style={styles.removeBtn}>✕</button>
                       </div>
                     </div>
                   );
@@ -557,7 +560,7 @@ const Ventas = () => {
                     <p><strong>{clienteSeleccionado.nombre}</strong></p>
                     <p>Saldo: ${parseFloat(clienteSeleccionado.saldo_cuenta_corriente).toFixed(2)} / Límite: ${parseFloat(clienteSeleccionado.limite_credito).toFixed(2)}</p>
                     {parseFloat(clienteSeleccionado.saldo_cuenta_corriente) + saldoPendienteCC > parseFloat(clienteSeleccionado.limite_credito) && (
-                      <p style={{ color: '#dc2626', fontWeight: '600', fontSize: '0.75rem' }}>⚠ Excede límite de crédito</p>
+                      <p style={{ color: '#E53935', fontWeight: '600', fontSize: '0.75rem' }}>⚠ Excede límite de crédito</p>
                     )}
                   </div>
                 )}
@@ -596,7 +599,7 @@ const Ventas = () => {
                 {pago > 0 && (
                   <div style={styles.summaryRow}>
                     <span>{cambio >= 0 ? 'Cambio' : 'Falta'}</span>
-                    <span style={{ color: cambio >= 0 ? '#16a34a' : '#dc2626', fontWeight: '600' }}>
+                    <span style={{ color: cambio >= 0 ? '#1294F2' : '#E53935', fontWeight: '600' }}>
                       ${Math.abs(cambio).toFixed(2)}
                     </span>
                   </div>
@@ -616,7 +619,7 @@ const Ventas = () => {
                 {Number(entregaEfectivo) > 0 && (
                   <div style={styles.summaryRow}>
                     <span>A CC</span>
-                    <span style={{ color: '#f97316', fontWeight: '600' }}>
+                    <span style={{ color: '#FF6B35', fontWeight: '600' }}>
                       ${(total - Number(entregaEfectivo)).toFixed(2)}
                     </span>
                   </div>
@@ -624,7 +627,7 @@ const Ventas = () => {
                 {clienteSeleccionado && (
                   <div style={styles.summaryRow}>
                     <span>Nuevo saldo CC</span>
-                    <span style={{ color: '#f97316', fontWeight: '600' }}>
+                    <span style={{ color: '#FF6B35', fontWeight: '600' }}>
                       ${(parseFloat(clienteSeleccionado.saldo_cuenta_corriente) + saldoPendienteCC).toFixed(2)}
                     </span>
                   </div>
@@ -701,26 +704,26 @@ const Ventas = () => {
 const styles = {
   page: { padding: '0.75rem 1.5rem' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' },
-  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', margin: 0 },
-  shortcutHint: { fontSize: '0.6875rem', color: '#a3a3a3', marginTop: '0.125rem' },
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#273444', margin: 0 },
+  shortcutHint: { fontSize: '0.6875rem', color: '#667085', marginTop: '0.125rem' },
   headerRight: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
   listaSelector: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.125rem' },
-  listaLabel: { fontSize: '0.625rem', fontWeight: '600', color: '#737373', textTransform: 'uppercase' },
+  listaLabel: { fontSize: '0.625rem', fontWeight: '600', color: '#667085', textTransform: 'uppercase' },
   listaBtns: { display: 'flex', gap: '0.25rem' },
-  listaBtnActive: { padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '2px solid #22c55e', background: '#f0fdf4', color: '#16a34a', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' },
-  listaBtnInactive: { padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '2px solid #e5e5e5', background: 'white', color: '#737373', fontWeight: '500', fontSize: '0.8125rem', cursor: 'pointer' },
-  backBtn: { padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e5e5', background: 'white', color: '#525252', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer' },
+  listaBtnActive: { padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '2px solid #1294F2', background: '#E8F4FD', color: '#1294F2', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' },
+  listaBtnInactive: { padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '2px solid #E6EDF5', background: 'white', color: '#667085', fontWeight: '500', fontSize: '0.8125rem', cursor: 'pointer' },
+  backBtn: { padding: '0.5rem 1rem', borderRadius: '14px', border: '1px solid #E6EDF5', background: 'white', color: '#667085', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer' },
 
   /* Búsqueda unificada */
   searchBar: { position: 'relative', marginBottom: '1rem' },
-  searchInputWrap: { display: 'flex', alignItems: 'center', background: 'white', border: '2px solid #e5e5e5', borderRadius: '0.75rem', padding: '0 1.25rem', transition: 'border-color 0.2s' },
-  searchIcon: { fontSize: '1.5rem', marginRight: '0.75rem', color: '#a3a3a3' },
+  searchInputWrap: { display: 'flex', alignItems: 'center', background: 'white', border: '2px solid #E6EDF5', borderRadius: '20px', padding: '0 1.25rem', transition: 'border-color 0.2s' },
+  searchIcon: { fontSize: '1.5rem', marginRight: '0.75rem', color: '#667085' },
   searchInput: { flex: 1, padding: '1rem 0', border: 'none', fontSize: '1.125rem', outline: 'none', background: 'transparent' },
-  searchHint: { fontSize: '0.6875rem', color: '#a3a3a3', whiteSpace: 'nowrap', marginLeft: '0.5rem' },
-  dropdown: { position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid #e5e5e5', borderRadius: '0 0 0.75rem 0.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, maxHeight: '300px', overflowY: 'auto' },
-  dropdownItem: { display: 'flex', justifyContent: 'space-between', width: '100%', padding: '0.75rem 1rem', background: 'white', border: 'none', borderBottom: '1px solid #f5f5f5', fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left' },
-  dropdownName: { color: '#171717' },
-  dropdownPrice: { color: '#16a34a', fontWeight: '700' },
+  searchHint: { fontSize: '0.6875rem', color: '#667085', whiteSpace: 'nowrap', marginLeft: '0.5rem' },
+  dropdown: { position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid #E6EDF5', borderRadius: '0 0 20px 20px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, maxHeight: '300px', overflowY: 'auto' },
+  dropdownItem: { display: 'flex', justifyContent: 'space-between', width: '100%', padding: '0.75rem 1rem', background: 'white', border: 'none', borderBottom: '1px solid #F5F8FC', fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left' },
+  dropdownName: { color: '#273444' },
+  dropdownPrice: { color: '#1294F2', fontWeight: '700' },
 
   /* Layout principal */
   mainLayout: { display: 'grid', gridTemplateColumns: '1fr 300px', gap: '0.75rem', alignItems: 'start' },
@@ -728,67 +731,67 @@ const styles = {
   rightCol: { display: 'flex', flexDirection: 'column', gap: '1rem', position: 'sticky', top: '72px' },
 
   /* Productos grandes (centro) */
-  productCard: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1rem', minHeight: '300px' },
+  productCard: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1rem', minHeight: '300px' },
   productCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' },
-  productCardTitle: { fontSize: '0.9375rem', fontWeight: '600', color: '#404040', margin: 0 },
-  clearBtn: { fontSize: '0.6875rem', padding: '0.25rem 0.5rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '0.25rem', cursor: 'pointer' },
-  emptyProductList: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 0', color: '#a3a3a3' },
+  productCardTitle: { fontSize: '0.9375rem', fontWeight: '600', color: '#273444', margin: 0 },
+  clearBtn: { fontSize: '0.6875rem', padding: '0.25rem 0.5rem', background: '#fef2f2', color: '#E53935', border: '1px solid #fecaca', borderRadius: '0.25rem', cursor: 'pointer' },
+  emptyProductList: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 0', color: '#667085' },
   emptyIcon: { fontSize: '3rem', marginBottom: '0.75rem' },
   emptyText: { fontSize: '1rem', margin: 0 },
   bigProductList: { display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: 'calc(100vh - 260px)', overflowY: 'auto', scrollBehavior: 'smooth', paddingRight: '0.25rem' },
-  bigProductRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', background: '#fafafa', borderRadius: '0.5rem', border: '1px solid #f0f0f0' },
+  bigProductRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', background: '#F5F8FC', borderRadius: '14px', border: '1px solid #f0f0f0' },
   bigProductInfo: { display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 },
-  bigProductName: { fontWeight: '700', fontSize: '1.25rem', color: '#171717' },
+  bigProductName: { fontWeight: '700', fontSize: '1.25rem', color: '#273444' },
   bigProductMeta: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
   bigProductRight: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.375rem', marginLeft: '1rem' },
-  bigProductSubtotal: { fontWeight: '800', fontSize: '1.375rem', color: '#16a34a' },
-  priceInput: { width: '90px', padding: '0.5rem 0.625rem', border: '1px solid #e5e5e5', borderRadius: '0.375rem', fontSize: '1rem', outline: 'none', background: 'white', textAlign: 'right' },
-  xLabel: { fontSize: '0.875rem', color: '#a3a3a3' },
-  qtyInput: { width: '56px', padding: '0.5rem', border: '1px solid #e5e5e5', borderRadius: '0.375rem', fontSize: '1rem', textAlign: 'center', outline: 'none' },
+  bigProductSubtotal: { fontWeight: '800', fontSize: '1.375rem', color: '#1294F2' },
+  priceInput: { width: '90px', padding: '0.5rem 0.625rem', border: '1px solid #E6EDF5', borderRadius: '0.375rem', fontSize: '1rem', outline: 'none', background: 'white', textAlign: 'right' },
+  xLabel: { fontSize: '0.875rem', color: '#667085' },
+  qtyInput: { width: '56px', padding: '0.5rem', border: '1px solid #E6EDF5', borderRadius: '0.375rem', fontSize: '1rem', textAlign: 'center', outline: 'none' },
   variableBadge: { fontSize: '0.5625rem', background: '#fef3c7', color: '#92400e', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '600', textTransform: 'uppercase' },
-  removeBtn: { width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none', background: '#fef2f2', color: '#dc2626', fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  removeBtn: { width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none', background: '#fef2f2', color: '#E53935', fontSize: '0.875rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
 
   /* Cards genéricas */
-  card: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '0.875rem' },
-  cardTitle: { fontSize: '0.8125rem', fontWeight: '600', color: '#404040', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.025em' },
+  card: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '0.875rem' },
+  cardTitle: { fontSize: '0.8125rem', fontWeight: '600', color: '#273444', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.025em' },
 
   /* Pago */
   fieldGroup: { marginBottom: '0.75rem' },
-  label: { display: 'block', fontSize: '0.6875rem', fontWeight: '600', color: '#737373', marginBottom: '0.375rem', textTransform: 'uppercase' },
+  label: { display: 'block', fontSize: '0.6875rem', fontWeight: '600', color: '#667085', marginBottom: '0.375rem', textTransform: 'uppercase' },
   radioRow: { display: 'flex', gap: '0.375rem' },
-  radioActive: { flex: 1, padding: '0.5rem', border: '2px solid #22c55e', borderRadius: '0.5rem', background: '#f0fdf4', color: '#16a34a', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
-  radioActiveCC: { flex: 1, padding: '0.5rem', border: '2px solid #f97316', borderRadius: '0.5rem', background: '#fff7ed', color: '#ea580c', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
-  radioActiveQR: { flex: 1, padding: '0.5rem', border: '2px solid #3b82f6', borderRadius: '0.5rem', background: '#eff6ff', color: '#2563eb', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
-  radioInactive: { flex: 1, padding: '0.5rem', border: '2px solid #e5e5e5', borderRadius: '0.5rem', background: 'white', color: '#737373', fontWeight: '500', fontSize: '0.8125rem', cursor: 'pointer' },
-  select: { width: '100%', padding: '0.5rem 0.75rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem', fontSize: '0.8125rem', outline: 'none', background: 'white' },
-  clientInfo: { marginTop: '0.5rem', padding: '0.5rem', background: '#fafafa', borderRadius: '0.375rem', fontSize: '0.75rem', color: '#404040' },
+  radioActive: { flex: 1, padding: '0.5rem', border: '2px solid #1294F2', borderRadius: '14px', background: '#E8F4FD', color: '#1294F2', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
+  radioActiveCC: { flex: 1, padding: '0.5rem', border: '2px solid #FF6B35', borderRadius: '14px', background: '#fff7ed', color: '#E55A2B', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
+  radioActiveQR: { flex: 1, padding: '0.5rem', border: '2px solid #1294F2', borderRadius: '14px', background: '#eff6ff', color: '#0B89FF', fontWeight: '600', fontSize: '0.8125rem', cursor: 'pointer' },
+  radioInactive: { flex: 1, padding: '0.5rem', border: '2px solid #E6EDF5', borderRadius: '14px', background: 'white', color: '#667085', fontWeight: '500', fontSize: '0.8125rem', cursor: 'pointer' },
+  select: { width: '100%', padding: '0.5rem 0.75rem', border: '1px solid #E6EDF5', borderRadius: '14px', fontSize: '0.8125rem', outline: 'none', background: 'white' },
+  clientInfo: { marginTop: '0.5rem', padding: '0.5rem', background: '#F5F8FC', borderRadius: '0.375rem', fontSize: '0.75rem', color: '#273444' },
 
   /* Resumen */
-  summaryCard: { border: '2px solid #22c55e' },
-  summaryRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.375rem 0', borderBottom: '1px solid #f5f5f5', fontSize: '0.8125rem', color: '#525252' },
-  summaryRowTotal: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.625rem 0', borderBottom: '2px solid #e5e5e5', fontSize: '1rem', fontWeight: '600', color: '#171717' },
-  totalAmount: { fontSize: '1.75rem', fontWeight: '800', color: '#16a34a' },
-  descInput: { width: '80px', padding: '0.25rem 0.5rem', border: '1px solid #e5e5e5', borderRadius: '0.375rem', fontSize: '0.8125rem', textAlign: 'right', outline: 'none' },
+  summaryCard: { border: '2px solid #1294F2' },
+  summaryRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.375rem 0', borderBottom: '1px solid #F5F8FC', fontSize: '0.8125rem', color: '#667085' },
+  summaryRowTotal: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.625rem 0', borderBottom: '2px solid #E6EDF5', fontSize: '1rem', fontWeight: '600', color: '#273444' },
+  totalAmount: { fontSize: '1.75rem', fontWeight: '800', color: '#1294F2' },
+  descInput: { width: '80px', padding: '0.25rem 0.5rem', border: '1px solid #E6EDF5', borderRadius: '0.375rem', fontSize: '0.8125rem', textAlign: 'right', outline: 'none' },
   actionBtns: { display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem' },
-  emitBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(22, 163, 74, 0.3)' },
-  qrBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)' },
-  secondaryBtn: { width: '100%', padding: '0.5rem', background: 'white', color: '#525252', border: '1px solid #e5e5e5', borderRadius: '0.5rem', fontWeight: '500', fontSize: '0.75rem', cursor: 'pointer' },
+  emitBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(18, 148, 242, 0.3)' },
+  qrBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #0B89FF)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(18, 148, 242, 0.3)' },
+  secondaryBtn: { width: '100%', padding: '0.5rem', background: 'white', color: '#667085', border: '1px solid #E6EDF5', borderRadius: '14px', fontWeight: '500', fontSize: '0.75rem', cursor: 'pointer' },
 
   /* Modal */
   modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, backdropFilter: 'blur(4px)' },
-  modal: { background: 'white', borderRadius: '0.75rem', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' },
-  modalHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #e5e5e5' },
-  modalTitle: { fontSize: '1rem', fontWeight: '600', color: '#171717', margin: 0 },
-  modalClose: { width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none', background: '#f5f5f5', color: '#525252', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  modal: { background: 'white', borderRadius: '20px', width: '90%', maxWidth: '500px', maxHeight: '80vh', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' },
+  modalHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #E6EDF5' },
+  modalTitle: { fontSize: '1rem', fontWeight: '600', color: '#273444', margin: 0 },
+  modalClose: { width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none', background: '#F5F8FC', color: '#667085', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   modalBody: { padding: '1rem 1.25rem', overflowY: 'auto', maxHeight: '60vh' },
-  ticketRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #f5f5f5', marginBottom: '0.5rem' },
-  ticketDate: { fontSize: '0.75rem', color: '#525252', margin: 0 },
-  ticketTotal: { fontSize: '1rem', fontWeight: '700', color: '#171717', margin: '0.125rem 0 0' },
-  ccBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#f97316', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
-  mpBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#3b82f6', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
+  ticketRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', borderRadius: '14px', border: '1px solid #F5F8FC', marginBottom: '0.5rem' },
+  ticketDate: { fontSize: '0.75rem', color: '#667085', margin: 0 },
+  ticketTotal: { fontSize: '1rem', fontWeight: '700', color: '#273444', margin: '0.125rem 0 0' },
+  ccBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#FF6B35', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
+  mpBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#1294F2', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
   partialBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#8b5cf6', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
-  reprintBtn: { padding: '0.375rem 0.75rem', background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: '0.375rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer' },
-  emptyMsg: { color: '#a3a3a3', fontSize: '0.8125rem', textAlign: 'center', padding: '1.5rem 0' },
+  reprintBtn: { padding: '0.375rem 0.75rem', background: '#E8F4FD', color: '#1294F2', border: '1px solid #D0ECFF', borderRadius: '0.375rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer' },
+  emptyMsg: { color: '#667085', fontSize: '0.8125rem', textAlign: 'center', padding: '1.5rem 0' },
 };
 
 export default Ventas;

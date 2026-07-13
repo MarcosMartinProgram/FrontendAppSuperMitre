@@ -452,7 +452,7 @@ const CuentasCorrientes = () => {
               <div style={styles.balanceRow}>
                 <span>Crédito disponible</span>
                 <span style={{
-                  color: (parseFloat(clienteSeleccionado.limite_credito) - parseFloat(clienteSeleccionado.saldo_cuenta_corriente)) > 0 ? '#16a34a' : '#dc2626',
+                  color: (parseFloat(clienteSeleccionado.limite_credito) - parseFloat(clienteSeleccionado.saldo_cuenta_corriente)) > 0 ? '#1294F2' : '#E53935',
                   fontWeight: '600',
                 }}>
                   ${(parseFloat(clienteSeleccionado.limite_credito) - parseFloat(clienteSeleccionado.saldo_cuenta_corriente)).toFixed(2)}
@@ -462,7 +462,7 @@ const CuentasCorrientes = () => {
                 <div style={{
                   ...styles.progressFill,
                   width: `${Math.min(100, (parseFloat(clienteSeleccionado.saldo_cuenta_corriente) / parseFloat(clienteSeleccionado.limite_credito)) * 100)}%`,
-                  background: (parseFloat(clienteSeleccionado.saldo_cuenta_corriente) / parseFloat(clienteSeleccionado.limite_credito)) > 0.9 ? '#dc2626' : '#22c55e',
+                  background: (parseFloat(clienteSeleccionado.saldo_cuenta_corriente) / parseFloat(clienteSeleccionado.limite_credito)) > 0.9 ? '#E53935' : '#1294F2',
                 }} />
               </div>
               {parseFloat(clienteSeleccionado.saldo_cuenta_corriente) >= parseFloat(clienteSeleccionado.limite_credito) && (
@@ -481,7 +481,7 @@ const CuentasCorrientes = () => {
                   <div style={{ textAlign: 'center' }}>
                     <p style={styles.emptyText}>No hay tickets pendientes</p>
                     <button onClick={saldarCuenta} disabled={saldando}
-                      style={{ ...styles.payBtn, background: 'linear-gradient(135deg, #f97316, #ea580c)', marginTop: '0.5rem' }}>
+                      style={{ ...styles.payBtn, background: 'linear-gradient(135deg, #FF6B35, #E55A2B)', marginTop: '0.5rem' }}>
                       {saldando ? 'Saldando...' : 'Saldar Cuenta'}
                     </button>
                   </div>
@@ -552,11 +552,11 @@ const CuentasCorrientes = () => {
                         </div>
                         <div style={styles.paySummaryRow}>
                           <span>Pago:</span>
-                          <span style={{ color: '#16a34a' }}>-${parseFloat(montoPago).toFixed(2)}</span>
+                          <span style={{ color: '#1294F2' }}>-${parseFloat(montoPago).toFixed(2)}</span>
                         </div>
                         <div style={styles.paySummaryRowTotal}>
                           <span>Nuevo saldo:</span>
-                          <span style={{ color: (parseFloat(clienteSeleccionado.saldo_cuenta_corriente) - parseFloat(montoPago)) < 0 ? '#dc2626' : '#16a34a' }}>
+                          <span style={{ color: (parseFloat(clienteSeleccionado.saldo_cuenta_corriente) - parseFloat(montoPago)) < 0 ? '#E53935' : '#1294F2' }}>
                             ${(parseFloat(clienteSeleccionado.saldo_cuenta_corriente) - parseFloat(montoPago)).toFixed(2)}
                           </span>
                         </div>
@@ -611,7 +611,7 @@ const CuentasCorrientes = () => {
                           <div style={{ fontWeight: '600', fontSize: '0.8125rem' }}>
                             Ticket #{t.id_ticket} — ${parseFloat(t.total).toFixed(2)}
                           </div>
-                          <div style={{ fontSize: '0.6875rem', color: '#737373', marginTop: '0.125rem' }}>
+                          <div style={{ fontSize: '0.6875rem', color: '#667085', marginTop: '0.125rem' }}>
                             {new Date(t.fecha).toLocaleDateString('es-AR')} — {t.productos_info || 'Ver productos'}
                           </div>
                         </div>
@@ -736,69 +736,69 @@ const CuentasCorrientes = () => {
 const styles = {
   page: { padding: '1rem 1.5rem' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' },
-  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', margin: 0 },
-  subtitle: { fontSize: '0.875rem', color: '#737373', marginTop: '0.25rem' },
-  backBtn: { padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e5e5', background: 'white', color: '#525252', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer' },
-  card: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1rem', marginBottom: '1rem' },
-  searchInput: { flex: 1, padding: '0.625rem 0.875rem', border: '1px solid #e5e5e5', borderRadius: '0.5rem', fontSize: '0.875rem', outline: 'none' },
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#273444', margin: 0 },
+  subtitle: { fontSize: '0.875rem', color: '#667085', marginTop: '0.25rem' },
+  backBtn: { padding: '0.5rem 1rem', borderRadius: '14px', border: '1px solid #E6EDF5', background: 'white', color: '#667085', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer' },
+  card: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1rem', marginBottom: '1rem' },
+  searchInput: { flex: 1, padding: '0.625rem 0.875rem', border: '1px solid #E6EDF5', borderRadius: '14px', fontSize: '0.875rem', outline: 'none' },
   layout: { display: 'grid', gridTemplateColumns: '1fr 420px', gap: '1rem', alignItems: 'start' },
-  listCard: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem' },
-  cardTitle: { fontSize: '0.8125rem', fontWeight: '600', color: '#404040', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.025em' },
+  listCard: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem' },
+  cardTitle: { fontSize: '0.8125rem', fontWeight: '600', color: '#273444', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.025em' },
   list: { display: 'flex', flexDirection: 'column', gap: '0.375rem', maxHeight: '500px', overflowY: 'auto' },
-  clientRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #f5f5f5', background: 'white', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s ease' },
-  clientRowActive: { borderColor: '#22c55e', background: '#f0fdf4' },
+  clientRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', borderRadius: '14px', border: '1px solid #f5f5f5', background: 'white', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s ease' },
+  clientRowActive: { borderColor: '#1294F2', background: '#E8F4FD' },
   clientMain: { display: 'flex', flexDirection: 'column', gap: '0.125rem' },
-  clientName: { fontWeight: '600', fontSize: '0.875rem', color: '#171717' },
-  clientPhone: { fontSize: '0.75rem', color: '#737373' },
+  clientName: { fontWeight: '600', fontSize: '0.875rem', color: '#273444' },
+  clientPhone: { fontSize: '0.75rem', color: '#667085' },
   clientRight: { display: 'flex', alignItems: 'center', gap: '0.375rem' },
-  clientDebt: { fontWeight: '700', fontSize: '0.9375rem', color: '#f97316' },
-  warningDot: { width: '20px', height: '20px', borderRadius: '50%', background: '#fef2f2', color: '#dc2626', fontSize: '0.6875rem', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  editBtn: { width: '28px', height: '28px', borderRadius: '0.375rem', border: '1px solid #e5e5e5', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0 },
-  detailCard: { background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem', position: 'sticky', top: '72px' },
+  clientDebt: { fontWeight: '700', fontSize: '0.9375rem', color: '#FF6B35' },
+  warningDot: { width: '20px', height: '20px', borderRadius: '50%', background: '#fef2f2', color: '#E53935', fontSize: '0.6875rem', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  editBtn: { width: '28px', height: '28px', borderRadius: '0.375rem', border: '1px solid #E6EDF5', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0 },
+  detailCard: { background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem', position: 'sticky', top: '72px' },
   detailGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' },
   detailField: { display: 'flex', flexDirection: 'column', gap: '0.125rem' },
-  detailLabel: { fontSize: '0.6875rem', color: '#737373', textTransform: 'uppercase', fontWeight: '600' },
-  detailValue: { fontSize: '0.875rem', color: '#171717', fontWeight: '500' },
-  balanceSection: { padding: '1rem', background: '#fafafa', borderRadius: '0.5rem', marginBottom: '1rem' },
-  balanceRow: { display: 'flex', justifyContent: 'space-between', padding: '0.375rem 0', fontSize: '0.875rem', color: '#525252' },
-  balanceAmount: { fontWeight: '700', color: '#f97316', fontSize: '1.125rem' },
-  balanceLimit: { fontWeight: '600', color: '#404040' },
-  progressBar: { height: '6px', background: '#e5e5e5', borderRadius: '3px', marginTop: '0.5rem', overflow: 'hidden' },
+  detailLabel: { fontSize: '0.6875rem', color: '#667085', textTransform: 'uppercase', fontWeight: '600' },
+  detailValue: { fontSize: '0.875rem', color: '#273444', fontWeight: '500' },
+  balanceSection: { padding: '1rem', background: '#fafafa', borderRadius: '14px', marginBottom: '1rem' },
+  balanceRow: { display: 'flex', justifyContent: 'space-between', padding: '0.375rem 0', fontSize: '0.875rem', color: '#667085' },
+  balanceAmount: { fontWeight: '700', color: '#FF6B35', fontSize: '1.125rem' },
+  balanceLimit: { fontWeight: '600', color: '#273444' },
+  progressBar: { height: '6px', background: '#E6EDF5', borderRadius: '3px', marginTop: '0.5rem', overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: '3px', transition: 'width 0.3s ease' },
-  alertBox: { marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.375rem', color: '#dc2626', fontSize: '0.8125rem', fontWeight: '600' },
-  sellBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '700', fontSize: '0.875rem', cursor: 'pointer', marginTop: '0.75rem' },
+  alertBox: { marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.375rem', color: '#E53935', fontSize: '0.8125rem', fontWeight: '600' },
+  sellBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.875rem', cursor: 'pointer', marginTop: '0.75rem' },
 
   /* Pago */
-  paySection: { padding: '1rem', background: '#f0fdf4', borderRadius: '0.5rem', border: '1px solid #bbf7d0', marginBottom: '1rem' },
-  loadingText: { fontSize: '0.8125rem', color: '#737373', textAlign: 'center', padding: '1rem 0' },
-  emptyText: { fontSize: '0.8125rem', color: '#737373', textAlign: 'center', padding: '1rem 0' },
+  paySection: { padding: '1rem', background: '#E8F4FD', borderRadius: '14px', border: '1px solid #D0ECFF', marginBottom: '1rem' },
+  loadingText: { fontSize: '0.8125rem', color: '#667085', textAlign: 'center', padding: '1rem 0' },
+  emptyText: { fontSize: '0.8125rem', color: '#667085', textAlign: 'center', padding: '1rem 0' },
   ticketHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' },
-  ticketHeaderText: { fontSize: '0.75rem', fontWeight: '600', color: '#404040' },
+  ticketHeaderText: { fontSize: '0.75rem', fontWeight: '600', color: '#273444' },
   ticketActions: { display: 'flex', gap: '0.375rem' },
-  selectBtn: { fontSize: '0.625rem', padding: '0.25rem 0.5rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.25rem', cursor: 'pointer', color: '#525252' },
-  ticketList: { display: 'flex', flexDirection: 'column', gap: '0.25rem', maxHeight: '160px', overflowY: 'auto', marginBottom: '0.75rem', background: 'white', borderRadius: '0.375rem', border: '1px solid #e5e5e5', padding: '0.25rem' },
+  selectBtn: { fontSize: '0.625rem', padding: '0.25rem 0.5rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.25rem', cursor: 'pointer', color: '#667085' },
+  ticketList: { display: 'flex', flexDirection: 'column', gap: '0.25rem', maxHeight: '160px', overflowY: 'auto', marginBottom: '0.75rem', background: 'white', borderRadius: '0.375rem', border: '1px solid #E6EDF5', padding: '0.25rem' },
   ticketRow: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.625rem', borderRadius: '0.25rem', cursor: 'pointer', fontSize: '0.8125rem', borderBottom: '1px solid #f5f5f5' },
-  checkbox: { width: '16px', height: '16px', accentColor: '#22c55e', flexShrink: 0 },
+  checkbox: { width: '16px', height: '16px', accentColor: '#1294F2', flexShrink: 0 },
   ticketInfo: { flex: 1, display: 'flex', justifyContent: 'space-between' },
-  ticketId: { fontWeight: '600', color: '#171717' },
-  ticketDate: { color: '#737373', fontSize: '0.75rem' },
-  ticketTotal: { fontWeight: '700', color: '#f97316' },
-  totalRow: { display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderTop: '1px solid #bbf7d0', fontSize: '0.875rem', fontWeight: '600', color: '#171717' },
-  totalAmount: { fontWeight: '800', color: '#16a34a', fontSize: '1rem' },
+  ticketId: { fontWeight: '600', color: '#273444' },
+  ticketDate: { color: '#667085', fontSize: '0.75rem' },
+  ticketTotal: { fontWeight: '700', color: '#FF6B35' },
+  totalRow: { display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderTop: '1px solid #D0ECFF', fontSize: '0.875rem', fontWeight: '600', color: '#273444' },
+  totalAmount: { fontWeight: '800', color: '#1294F2', fontSize: '1rem' },
   payField: { marginBottom: '0.625rem' },
-  payLabel: { display: 'block', fontSize: '0.6875rem', fontWeight: '600', color: '#404040', marginBottom: '0.25rem', textTransform: 'uppercase' },
+  payLabel: { display: 'block', fontSize: '0.6875rem', fontWeight: '600', color: '#273444', marginBottom: '0.25rem', textTransform: 'uppercase' },
   payInput: { width: '100%', padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', outline: 'none' },
-  paySummary: { padding: '0.625rem', background: 'white', borderRadius: '0.375rem', border: '1px solid #e5e5e5', marginBottom: '0.75rem' },
-  paySummaryRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', color: '#525252', padding: '0.125rem 0' },
-  paySummaryRowTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '0.9375rem', fontWeight: '700', color: '#171717', borderTop: '1px solid #e5e5e5', paddingTop: '0.375rem', marginTop: '0.25rem' },
-  payBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '700', fontSize: '0.875rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(22, 163, 74, 0.3)' },
-  payBtnDisabled: { width: '100%', padding: '0.75rem', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '700', fontSize: '0.875rem', cursor: 'not-allowed' },
+  paySummary: { padding: '0.625rem', background: 'white', borderRadius: '0.375rem', border: '1px solid #E6EDF5', marginBottom: '0.75rem' },
+  paySummaryRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', color: '#667085', padding: '0.125rem 0' },
+  paySummaryRowTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '0.9375rem', fontWeight: '700', color: '#273444', borderTop: '1px solid #E6EDF5', paddingTop: '0.375rem', marginTop: '0.25rem' },
+  payBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.875rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(18, 148, 242, 0.3)' },
+  payBtnDisabled: { width: '100%', padding: '0.75rem', background: '#667085', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.875rem', cursor: 'not-allowed' },
 
   /* Búsqueda + Nuevo Cliente */
   searchRow: { display: 'flex', gap: '0.75rem', alignItems: 'center' },
   newClientBtn: {
-    padding: '0.625rem 1rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-    color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: '600',
+    padding: '0.625rem 1rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)',
+    color: 'white', border: 'none', borderRadius: '14px', fontWeight: '600',
     fontSize: '0.8125rem', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
   },
 
@@ -809,56 +809,56 @@ const styles = {
     zIndex: 200, backdropFilter: 'blur(4px)',
   },
   modal: {
-    background: 'white', borderRadius: '0.75rem', width: '90%', maxWidth: '520px',
+    background: 'white', borderRadius: '20px', width: '90%', maxWidth: '520px',
     overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
   },
   modalHeader: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '1rem 1.25rem', borderBottom: '1px solid #e5e5e5',
+    padding: '1rem 1.25rem', borderBottom: '1px solid #E6EDF5',
   },
-  modalTitle: { fontSize: '1rem', fontWeight: '600', color: '#171717', margin: 0 },
+  modalTitle: { fontSize: '1rem', fontWeight: '600', color: '#273444', margin: 0 },
   modalClose: {
     width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none',
-    background: '#f5f5f5', color: '#525252', fontSize: '1rem', cursor: 'pointer',
+    background: '#f5f5f5', color: '#667085', fontSize: '1rem', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   },
   modalBody: { padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' },
   formRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' },
   formField: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
-  formLabel: { fontSize: '0.6875rem', fontWeight: '600', color: '#404040', textTransform: 'uppercase' },
+  formLabel: { fontSize: '0.6875rem', fontWeight: '600', color: '#273444', textTransform: 'uppercase' },
   formInput: {
     padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem',
-    fontSize: '0.875rem', outline: 'none', color: '#171717',
+    fontSize: '0.875rem', outline: 'none', color: '#273444',
   },
   checkboxRow: { display: 'flex', alignItems: 'center', gap: '0.5rem', paddingTop: '0.25rem' },
-  formCheckbox: { width: '16px', height: '16px', accentColor: '#22c55e' },
-  checkboxLabel: { fontSize: '0.8125rem', color: '#525252' },
+  formCheckbox: { width: '16px', height: '16px', accentColor: '#1294F2' },
+  checkboxLabel: { fontSize: '0.8125rem', color: '#667085' },
   modalFooter: {
     display: 'flex', justifyContent: 'flex-end', gap: '0.5rem',
-    padding: '1rem 1.25rem', borderTop: '1px solid #e5e5e5',
+    padding: '1rem 1.25rem', borderTop: '1px solid #E6EDF5',
   },
   cancelBtn: {
-    padding: '0.5rem 1rem', background: 'white', color: '#525252',
+    padding: '0.5rem 1rem', background: 'white', color: '#667085',
     border: '1px solid #d1d5db', borderRadius: '0.375rem', fontWeight: '500',
     fontSize: '0.8125rem', cursor: 'pointer',
   },
   saveBtn: {
-    padding: '0.5rem 1.25rem', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+    padding: '0.5rem 1.25rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)',
     color: 'white', border: 'none', borderRadius: '0.375rem', fontWeight: '600',
     fontSize: '0.8125rem', cursor: 'pointer',
   },
   saveBtnDisabled: {
-    padding: '0.5rem 1.25rem', background: '#94a3b8',
+    padding: '0.5rem 1.25rem', background: '#667085',
     color: 'white', border: 'none', borderRadius: '0.375rem', fontWeight: '600',
     fontSize: '0.8125rem', cursor: 'not-allowed',
   },
   asociarTicketRow: {
     display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem',
-    background: 'white', borderRadius: '0.375rem', border: '1px solid #e5e5e5',
+    background: 'white', borderRadius: '0.375rem', border: '1px solid #E6EDF5',
     marginBottom: '0.375rem',
   },
   asociarBtn: {
-    padding: '0.375rem 0.75rem', background: '#3b82f6', color: 'white',
+    padding: '0.375rem 0.75rem', background: '#1294F2', color: 'white',
     border: 'none', borderRadius: '0.375rem', fontSize: '0.75rem',
     fontWeight: '600', cursor: 'pointer', flexShrink: 0,
   },

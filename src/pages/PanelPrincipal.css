@@ -14,26 +14,32 @@
 .panel-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #171717;
+  color: #273444;
   margin: 0;
 }
 
 .panel-subtitle {
   font-size: 0.9375rem;
-  color: #737373;
+  color: #667085;
   margin: 0.25rem 0 0;
 }
 
 .panel-logout {
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  border: 1px solid #E6EDF5;
   background: white;
-  color: #525252;
+  color: #667085;
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.panel-logout:hover {
+  border-color: #1294F2;
+  color: #1294F2;
 }
 
 .panel-grid {
@@ -44,22 +50,22 @@
 
 .panel-card {
   background: white;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  border: 1px solid #E6EDF5;
   padding: 1.5rem;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 35px rgba(9,30,66,.08);
 }
 
 .panel-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 45px rgba(18,148,242,.20);
 }
 
 .panel-card-icon {
@@ -71,13 +77,13 @@
 .panel-card-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #171717;
+  color: #273444;
   margin: 0;
 }
 
 .panel-card-desc {
   font-size: 0.8125rem;
-  color: #737373;
+  color: #667085;
   margin: 0;
   line-height: 1.4;
 }

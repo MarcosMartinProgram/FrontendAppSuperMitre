@@ -60,12 +60,29 @@
 - Testear flujo completo: venta CC parcial → pago parcial en Cuentas Corrientes → comprobante
 - Deploy del frontend actualizado
 
+## Rediseño de identidad visual (julio 2026)
+- **Fuente**: Poppins (reemplaza DM Sans)
+- **Paleta**: Azul como color principal (reemplaza verde)
+  - Primary: `#1294F2`, Hover: `#0B89FF`
+  - Navy: `#081B2E`, Secondary: `#163554`
+  - Background: `#F5F8FC`, Card: `#FFFFFF`
+  - Text: `#273444`, Text Light: `#667085`, Border: `#E6EDF5`
+  - Éxito: `#1FB954`, Error: `#E53935`, Oferta: `#FF6B35`
+- **Navbar**: fondo azul oscuro gradient, links blancos, brand icon azul
+- **Footer**: fondo azul oscuro gradient, links azul claro
+- **Cards**: border-radius 20px, sombra sutil azul
+- **Botones**: gradient azul, border-radius 14px
+- **Theme file**: `src/theme.js` con tokens centralizados
+- **Logo**: `public/logo-sm.png`, **Favicon**: `public/favicon.png`
+- **Video hero**: `public/video-institucional.mp4` (autoplay muted loop)
+
 ## Archivos clave
 - `src/pages/Ventas.js` - punto de venta (755 líneas)
 - `src/pages/CuentasCorrientes.js` - gestión de CC con pagos (~340 líneas)
 - `src/pages/GestionProductos.js` - ABM productos
 - `src/services/api.js` - capa de API centralizada
 - `src/components/QRModal.js` - modal pago QR MercadoPago
+- `src/theme.js` - tokens de diseño centralizados (colores, fuentes, radios, sombras)
 - `src/setupProxy.js` - proxy split backend local/remoto
 - `backendsupermitre/routes/clientes.js` - rutas CC (pago, tickets-pendientes, resumen)
 - `backendsupermitre/routes/tickets.js` - CRUD tickets

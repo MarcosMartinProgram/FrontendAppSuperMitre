@@ -1,6 +1,6 @@
 .footer {
-  background: #171717;
-  color: #a3a3a3;
+  background: linear-gradient(90deg, #081B2E, #0E2238, #163554);
+  color: #667085;
   text-align: center;
   padding: 2rem 1rem;
   margin-top: auto;
@@ -22,7 +22,7 @@
 .footer-logo {
   width: 24px;
   height: 24px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(180deg, #24A2FF, #0076E6);
   color: white;
   border-radius: 0.375rem;
   display: flex;
@@ -40,12 +40,13 @@
 
 .footer-copy {
   font-size: 0.8125rem;
+  color: #667085;
   margin-bottom: 0.25rem;
 }
 
 .footer-disclaimer {
   font-size: 0.75rem;
-  color: #737373;
+  color: #667085;
   margin-bottom: 0.75rem;
 }
 
@@ -57,7 +58,7 @@
 }
 
 .footer-links a {
-  color: #4ade80;
+  color: #46B6FF;
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -65,10 +66,10 @@
 }
 
 .footer-links a:hover {
-  color: #22c55e;
+  color: #1294F2;
   text-decoration: underline;
 }
 
 .footer-sep {
-  color: #525252;
+  color: #163554;
 }

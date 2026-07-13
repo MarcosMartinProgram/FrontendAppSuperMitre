@@ -93,11 +93,11 @@ const styles = {
     alignItems: 'flex-start',
     marginBottom: '1.5rem',
   },
-  title: { fontSize: '1.5rem', fontWeight: '700', color: '#171717', margin: 0 },
-  subtitle: { fontSize: '0.875rem', color: '#737373', marginTop: '0.25rem' },
+  title: { fontSize: '1.5rem', fontWeight: '700', color: '#273444', margin: 0 },
+  subtitle: { fontSize: '0.875rem', color: '#667085', marginTop: '0.25rem' },
   backBtn: {
-    padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e5e5',
-    background: 'white', color: '#525252', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer',
+    padding: '0.5rem 1rem', borderRadius: '14px', border: '1px solid #E6EDF5',
+    background: 'white', color: '#667085', fontSize: '0.8125rem', fontWeight: '500', cursor: 'pointer',
   },
   grid: {
     display: 'grid',
@@ -112,35 +112,35 @@ const styles = {
     gap: '0.5rem',
     padding: '1.25rem 1rem',
     background: 'white',
-    border: '2px solid #e5e5e5',
-    borderRadius: '0.75rem',
+    border: '2px solid #E6EDF5',
+    borderRadius: '20px',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
   },
   reportActive: {
-    borderColor: '#22c55e',
-    background: '#f0fdf4',
+    borderColor: '#1294F2',
+    background: '#E8F4FD',
   },
   reportIcon: { fontSize: '1.5rem' },
-  reportLabel: { fontSize: '0.8125rem', fontWeight: '600', color: '#404040' },
+  reportLabel: { fontSize: '0.8125rem', fontWeight: '600', color: '#273444' },
   loading: {
-    textAlign: 'center', color: '#737373', padding: '2rem', fontSize: '0.875rem',
+    textAlign: 'center', color: '#667085', padding: '2rem', fontSize: '0.875rem',
   },
   resultCard: {
-    background: 'white', borderRadius: '0.75rem', border: '1px solid #e5e5e5', padding: '1.25rem',
+    background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5', padding: '1.25rem',
   },
   resultTitle: {
-    fontSize: '1rem', fontWeight: '600', color: '#171717', marginBottom: '1rem',
+    fontSize: '1rem', fontWeight: '600', color: '#273444', marginBottom: '1rem',
     textTransform: 'capitalize',
   },
-  empty: { color: '#a3a3a3', fontSize: '0.875rem', textAlign: 'center', padding: '1.5rem' },
+  empty: { color: '#667085', fontSize: '0.875rem', textAlign: 'center', padding: '1.5rem' },
   resultList: { display: 'flex', flexDirection: 'column', gap: '0.375rem' },
   resultRow: {
     display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0.75rem',
-    borderRadius: '0.375rem', background: '#fafafa', border: '1px solid #f5f5f5',
+    borderRadius: '0.375rem', background: '#F5F8FC', border: '1px solid #E6EDF5',
   },
-  resultName: { fontSize: '0.875rem', color: '#404040', fontWeight: '500' },
-  resultValue: { fontSize: '0.875rem', color: '#16a34a', fontWeight: '700' },
+  resultName: { fontSize: '0.875rem', color: '#273444', fontWeight: '500' },
+  resultValue: { fontSize: '0.875rem', color: '#1294F2', fontWeight: '700' },
 };
 
 export default Reportes;

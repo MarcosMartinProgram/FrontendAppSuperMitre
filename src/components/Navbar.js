@@ -76,10 +76,10 @@ const Navbar = () => {
 
       if (logoutBtnRef.current) {
         logoutBtnRef.current.addEventListener('mouseenter', () => {
-          gsap.to(logoutBtnRef.current, { backgroundColor: '#fef2f2', color: '#dc2626', borderColor: '#fecaca', duration: 0.2 });
+          gsap.to(logoutBtnRef.current, { backgroundColor: '#FEF2F2', color: '#E53935', borderColor: '#FECACA', duration: 0.2 });
         });
         logoutBtnRef.current.addEventListener('mouseleave', () => {
-          gsap.to(logoutBtnRef.current, { backgroundColor: 'white', color: '#525252', borderColor: '#e5e5e5', duration: 0.2 });
+          gsap.to(logoutBtnRef.current, { backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)', duration: 0.2 });
         });
       }
     }, navRef);
@@ -132,6 +132,18 @@ const Navbar = () => {
                   Panel
                 </Link>
               )}
+              {user.rol === 'master' && (
+                <Link
+                  to="/pedidos-online"
+                  className="navbar-link-item"
+                  style={{
+                    ...styles.link,
+                    ...(isActive('/pedidos-online') ? styles.linkActive : {}),
+                  }}
+                >
+                  Pedidos
+                </Link>
+              )}
               {user.rol === 'vendedor' && (
                 <Link
                   to="/ventas"
@@ -169,13 +181,12 @@ const Navbar = () => {
 
 const styles = {
   nav: {
-    background: 'white',
-    borderBottom: '1px solid #e5e5e5',
+    background: 'linear-gradient(90deg, #081B2E, #0E2238, #163554)',
     position: 'sticky',
     top: 0,
     zIndex: 50,
-    backdropFilter: 'blur(8px)',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backdropFilter: 'blur(10px)',
+    boxShadow: '0 1px 3px rgba(9,30,66,.08)',
   },
   inner: {
     maxWidth: '1400px',
@@ -195,7 +206,7 @@ const styles = {
   brandIcon: {
     width: '32px',
     height: '32px',
-    background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+    background: 'linear-gradient(180deg, #24A2FF, #0076E6)',
     color: 'white',
     borderRadius: '0.5rem',
     display: 'flex',
@@ -207,7 +218,7 @@ const styles = {
   brandText: {
     fontWeight: '700',
     fontSize: '1.125rem',
-    color: '#171717',
+    color: '#FFFFFF',
   },
   links: {
     display: 'flex',
@@ -219,25 +230,25 @@ const styles = {
     borderRadius: '0.375rem',
     fontSize: '0.875rem',
     fontWeight: '500',
-    color: '#525252',
+    color: 'rgba(255,255,255,0.7)',
     textDecoration: 'none',
-    transition: 'all 0.15s ease',
+    transition: 'all 0.3s ease',
   },
   linkActive: {
-    color: '#16a34a',
-    backgroundColor: '#f0fdf4',
+    color: '#1294F2',
+    backgroundColor: 'rgba(18, 148, 242, 0.1)',
   },
   logoutBtn: {
     marginLeft: '0.5rem',
     padding: '0.375rem 0.75rem',
     borderRadius: '0.375rem',
-    border: '1px solid #e5e5e5',
-    background: 'white',
-    color: '#525252',
+    border: '1px solid rgba(255,255,255,0.15)',
+    background: 'rgba(255,255,255,0.1)',
+    color: 'rgba(255,255,255,0.7)',
     fontSize: '0.8125rem',
     fontWeight: '500',
     cursor: 'pointer',
-    transition: 'all 0.15s ease',
+    transition: 'all 0.3s ease',
   },
 };
 

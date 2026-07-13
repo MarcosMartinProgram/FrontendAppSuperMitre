@@ -5,28 +5,33 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
+const slides = [
+  { src: '/slider1.png', alt: 'Super Mitre - Ofertas' },
+  { src: '/slider2.png', alt: 'Super Mitre - Promociones' },
+  { src: '/slider3.png', alt: 'Super Mitre - Productos' },
+  { src: '/slider4.png', alt: 'Super Mitre - Descuentos' },
+];
+
 const Carousel = () => {
   return (
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
-      spaceBetween={10}
+      spaceBetween={0}
       slidesPerView={1}
       navigation
       pagination={{ clickable: true }}
-      autoplay={{ delay: 3000 }}
+      autoplay={{ delay: 4000, disableOnInteraction: false }}
+      style={{ borderRadius: '20px' }}
     >
-      <SwiperSlide>
-        <img src="/cervezas.png" alt="Imagen cervezas"className="home-image"  />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src="/gaseosas.png" alt="Imagen gaseosas" className="home-image" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src="/comestibles.png" alt="Imagen comestibles" className="home-image"  />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src="/lacteos.png" alt="Imagen Lacteos" className="home-image"/>
-      </SwiperSlide>
+      {slides.map((slide, i) => (
+        <SwiperSlide key={i}>
+          <img
+            src={slide.src}
+            alt={slide.alt}
+            style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', maxHeight: '400px' }}
+          />
+        </SwiperSlide>
+      ))}
     </Swiper>
   );
 };

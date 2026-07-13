@@ -173,12 +173,12 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   };
 
   const estadoColor = {
-    creando: '#f59e0b',
-    esperando_pago: '#3b82f6',
-    aprobado: '#22c55e',
-    rechazado: '#dc2626',
-    expirado: '#a3a3a3',
-    error: '#dc2626'
+    creando: '#FFC107',
+    esperando_pago: '#1294F2',
+    aprobado: '#1FB954',
+    rechazado: '#E53935',
+    expirado: '#667085',
+    error: '#E53935'
   };
 
   const estadoLabel = {
@@ -280,27 +280,27 @@ const styles = {
     zIndex: 200, backdropFilter: 'blur(4px)'
   },
   modal: {
-    background: 'white', borderRadius: '0.75rem', width: '90%', maxWidth: '400px',
+    background: 'white', borderRadius: '20px', width: '90%', maxWidth: '400px',
     overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
   },
   header: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '1rem 1.25rem', borderBottom: '1px solid #e5e5e5'
+    padding: '1rem 1.25rem', borderBottom: '1px solid #E6EDF5'
   },
-  title: { fontSize: '1rem', fontWeight: '600', color: '#171717', margin: 0 },
+  title: { fontSize: '1rem', fontWeight: '600', color: '#273444', margin: 0 },
   closeBtn: {
-    width: '32px', height: '32px', borderRadius: '0.375rem', border: 'none',
-    background: '#f5f5f5', color: '#525252', fontSize: '1rem', cursor: 'pointer',
+    width: '32px', height: '32px', borderRadius: '14px', border: 'none',
+    background: '#F5F8FC', color: '#667085', fontSize: '1rem', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center'
   },
   body: { padding: '1.5rem 1.25rem', textAlign: 'center' },
   montoRow: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '0.75rem 1rem', background: '#f0fdf4', borderRadius: '0.5rem',
-    border: '1px solid #bbf7d0', marginBottom: '1rem'
+    padding: '0.75rem 1rem', background: '#E8F4FD', borderRadius: '14px',
+    border: '1px solid #D0ECFF', marginBottom: '1rem'
   },
-  montoLabel: { fontSize: '0.875rem', color: '#15803d', fontWeight: '500' },
-  montoValor: { fontSize: '1.5rem', fontWeight: '800', color: '#15803d' },
+  montoLabel: { fontSize: '0.875rem', color: '#1294F2', fontWeight: '500' },
+  montoValor: { fontSize: '1.5rem', fontWeight: '800', color: '#1294F2' },
   estadoBar: {
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
     marginBottom: '1.25rem'
@@ -309,32 +309,32 @@ const styles = {
   estadoTexto: { fontSize: '0.875rem', fontWeight: '600' },
   spinner: { fontSize: '3rem', margin: '1rem 0' },
   qrContainer: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' },
-  qrHint: { fontSize: '0.75rem', color: '#737373', marginTop: '0.5rem' },
+  qrHint: { fontSize: '0.75rem', color: '#667085', marginTop: '0.5rem' },
   timer: { width: '100%', marginTop: '0.5rem' },
-  timerText: { fontSize: '0.75rem', color: '#a3a3a3' },
+  timerText: { fontSize: '0.75rem', color: '#667085' },
   timerBar: {
-    height: '3px', background: '#3b82f6', borderRadius: '2px',
+    height: '3px', background: '#1294F2', borderRadius: '2px',
     transition: 'width 1s linear', marginTop: '0.25rem'
   },
   successBox: { padding: '2rem 0' },
   successIcon: {
-    fontSize: '3rem', color: '#22c55e', fontWeight: '700',
+    fontSize: '3rem', color: '#1FB954', fontWeight: '700',
     display: 'block', marginBottom: '0.5rem'
   },
-  successText: { fontSize: '1.125rem', fontWeight: '600', color: '#15803d', margin: 0 },
+  successText: { fontSize: '1.125rem', fontWeight: '600', color: '#1FB954', margin: 0 },
   errorBox: { padding: '1.5rem 0' },
-  errorText: { fontSize: '0.875rem', color: '#dc2626', margin: 0 },
+  errorText: { fontSize: '0.875rem', color: '#E53935', margin: 0 },
   expiredBox: { padding: '1.5rem 0' },
-  expiredText: { fontSize: '0.875rem', color: '#a3a3a3', margin: '0 0 1rem' },
+  expiredText: { fontSize: '0.875rem', color: '#667085', margin: '0 0 1rem' },
   retryBtn: {
-    padding: '0.625rem 1.5rem', background: '#3b82f6', color: 'white',
-    border: 'none', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.875rem',
+    padding: '0.625rem 1.5rem', background: 'linear-gradient(180deg, #24A2FF, #0076E6)', color: 'white',
+    border: 'none', borderRadius: '14px', fontWeight: '600', fontSize: '0.875rem',
     cursor: 'pointer'
   },
   footer: { padding: '0 1.25rem 1.25rem' },
   cancelBtn: {
-    width: '100%', padding: '0.625rem', background: 'white', color: '#525252',
-    border: '1px solid #e5e5e5', borderRadius: '0.5rem', fontWeight: '500',
+    width: '100%', padding: '0.625rem', background: 'white', color: '#667085',
+    border: '1px solid #E6EDF5', borderRadius: '14px', fontWeight: '500',
     fontSize: '0.8125rem', cursor: 'pointer'
   }
 };

@@ -24,11 +24,11 @@ const PanelPrincipal = () => {
   };
 
   const cards = [
-    { title: 'Gestión de Productos', desc: 'Agregar, editar y eliminar productos del catálogo', icon: '📦', path: '/gestion-productos', color: '#22c55e' },
-    { title: 'Registrar Ventas', desc: 'Emitir tickets y gestionar ventas del día', icon: '🧾', path: '/registrar-ventas', color: '#f97316' },
-    { title: 'Ver Reportes', desc: 'Consultar estadísticas y reportes de ventas', icon: '📊', path: '/reportes', color: '#3b82f6' },
-    { title: 'Gestión de Rubros', desc: 'Administrar categorías de productos', icon: '🏷️', path: '/rubros', color: '#8b5cf6' },
-    { title: 'Cuentas Corrientes', desc: 'Consultar saldos y clientes con crédito', icon: '📋', path: '/cuentas-corrientes', color: '#f59e0b' },
+    { title: 'Gestión de Productos', desc: 'Agregar, editar y eliminar productos del catálogo', icon: '📦', path: '/gestion-productos', color: '#1294F2' },
+    { title: 'Registrar Ventas', desc: 'Emitir tickets y gestionar ventas del día', icon: '🧾', path: '/registrar-ventas', color: '#FF6B35' },
+    { title: 'Ver Reportes', desc: 'Consultar estadísticas y reportes de ventas', icon: '📊', path: '/reportes', color: '#1294F2' },
+    { title: 'Gestión de Rubros', desc: 'Administrar categorías de productos', icon: '🏷️', path: '/rubros', color: '#8B5CF6' },
+    { title: 'Cuentas Corrientes', desc: 'Consultar saldos y clientes con crédito', icon: '📋', path: '/cuentas-corrientes', color: '#FFC107' },
   ];
 
   useEffect(() => {
