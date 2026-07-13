@@ -97,7 +97,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
         const data = await res.json();
 
         if (data.success && data.payment_status) {
-          if (data.payment_status === 'processed' || data.payment_status === 'accredited') {
+          if (data.payment_status === 'approved' || data.payment_status === 'processed' || data.payment_status === 'accredited') {
             setEstado('aprobado');
             clearInterval(pollingRef.current);
             clearInterval(timerRef.current);
