@@ -76,6 +76,7 @@ export const pedidosOnlineAPI = {
   getById: (id) => api.get(`/api/pedidos-online/${id}`),
   updateEstado: (id, estado) => api.put(`/api/pedidos-online/${id}/estado`, { estado }),
   reenviarWhatsApp: (id) => api.post(`/api/pedidos-online/${id}/reenviar-whatsapp`),
+  registrar: (data) => api.post('/api/pedidos-online/registrar', data),
 };
 
 export default api;

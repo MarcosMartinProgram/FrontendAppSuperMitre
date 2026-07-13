@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { gsap } from '../gsap';
+import { pedidosOnlineAPI } from '../services/api';
 
 const API_MP = '/api/mercadopago';
 
@@ -100,6 +101,18 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
             setEstado('aprobado');
             clearInterval(pollingRef.current);
             clearInterval(timerRef.current);
+
+            pedidosOnlineAPI.registrar({
+              order_id: orderId,
+              payment_id: paymentId,
+              total: total,
+              productos: productos.map(p => ({
+                nombre: p.nombre,
+                precio: p.precio_venta || p.precio,
+                cantidad: p.cantidad,
+              })),
+            }).catch(err => console.error('Error registrando pedido online:', err));
+
             setTimeout(() => onPagoAprobado({ orderId, paymentId }), 1500);
           } else if (data.payment_status === 'canceled' || data.payment_status === 'expired') {
             setEstado('rechazado');
