@@ -206,6 +206,7 @@ const CuentasCorrientes = () => {
     } finally {
       setProcesando(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [montoPago, descripcion, ticketsSeleccionados, ticketsPendientes, clienteSeleccionado, cargarTicketsPendientes]);
 
   const generarComprobante = (cliente, monto, saldoAnt, saldoNue, ticketsIds, tickets, nroRecibo) => {

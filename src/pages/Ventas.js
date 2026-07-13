@@ -391,6 +391,7 @@ const Ventas = () => {
       console.error('Error al emitir ticket:', err);
       alert('Error al emitir el ticket');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productosVenta, descuento, total, pago, cambio, tipoPago, clienteSeleccionado, entregaEfectivo, generarTicketHTML, imprimirTicket]);
 
   const reimprimirTicket = useCallback((ticket) => {
