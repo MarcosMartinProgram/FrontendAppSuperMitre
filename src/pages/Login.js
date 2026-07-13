@@ -120,6 +120,11 @@ const Login = () => {
               ? 'Registrate para acceder a la tienda'
               : 'Accedé a tu panel de control'}
           </p>
+          {isNewUser && (
+            <p style={{ fontSize: '0.8125rem', color: '#667085', margin: '-0.5rem 0 0', textAlign: 'center' }}>
+              Complete los datos correctos para su envío
+            </p>
+          )}
         </div>
 
         {error && <div className="login-error">{error}</div>}

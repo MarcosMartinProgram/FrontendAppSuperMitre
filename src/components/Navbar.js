@@ -168,6 +168,9 @@ const Navbar = () => {
                   Tienda
                 </Link>
               )}
+              {user.rol === 'cliente' && user.nombre && (
+                <span style={styles.userGreeting}>Hola, {user.nombre.split(' ')[0]}</span>
+              )}
               <button onClick={handleLogout} style={styles.logoutBtn} ref={logoutBtnRef}>
                 Salir
               </button>
@@ -249,6 +252,13 @@ const styles = {
     fontWeight: '500',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
+  },
+  userGreeting: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: '0.8125rem',
+    fontWeight: '500',
+    marginLeft: '0.5rem',
+    marginRight: '0.25rem',
   },
 };
 

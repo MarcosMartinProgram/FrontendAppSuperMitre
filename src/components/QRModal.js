@@ -5,7 +5,7 @@ import { pedidosOnlineAPI } from '../services/api';
 
 const API_MP = '/api/mercadopago';
 
-const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
+const QRModal = ({ total, productos, onPagoAprobado, onCancelar, usuario }) => {
   const [qrData, setQrData] = useState(null);
   const [orderId, setOrderId] = useState(null);
   const [paymentId, setPaymentId] = useState(null);
@@ -18,9 +18,9 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
   const overlayRef = useRef(null);
   const qrRef = useRef(null);
 
-  const [clienteNombre, setClienteNombre] = useState('');
-  const [clienteTelefono, setClienteTelefono] = useState('');
-  const [clienteDireccion, setClienteDireccion] = useState('');
+  const [clienteNombre, setClienteNombre] = useState(usuario?.nombre || '');
+  const [clienteTelefono, setClienteTelefono] = useState(usuario?.numero_whatsapp || '');
+  const [clienteDireccion, setClienteDireccion] = useState(usuario?.direccion || '');
 
   const crearOrden = useCallback(async (datosCliente) => {
     try {
@@ -112,6 +112,7 @@ const QRModal = ({ total, productos, onPagoAprobado, onCancelar }) => {
               cliente_nombre: clienteNombre || null,
               cliente_telefono: clienteTelefono || null,
               cliente_direccion: clienteDireccion || null,
+              id_usuario: usuario?.id || null,
               productos: productos.map(p => ({
                 nombre: p.nombre,
                 precio: p.precio_venta || p.precio,

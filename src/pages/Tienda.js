@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { rubrosAPI, productosAPI, mpAPI } from '../services/api';
+import { rubrosAPI, productosAPI, mpAPI, pedidosOnlineAPI } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 import QRModal from '../components/QRModal';
 import gsap from 'gsap';
 
 const Tienda = () => {
+  const { user } = useAuth();
   const [rubros, setRubros] = useState([]);
   const [productos, setProductos] = useState([]);
   const [rubroSeleccionado, setRubroSeleccionado] = useState(null);
@@ -14,6 +16,10 @@ const Tienda = () => {
   const [procesando, setProcesando] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [busqueda, setBusqueda] = useState('');
+  const [tab, setTab] = useState('tienda');
+  const [misPedidos, setMisPedidos] = useState([]);
+  const [pedidosLoading, setPedidosLoading] = useState(false);
+  const [pedidoDetalle, setPedidoDetalle] = useState(null);
   const containerRef = useRef(null);
   const titleRef = useRef(null);
   const carouselRef = useRef(null);
@@ -134,6 +140,23 @@ const Tienda = () => {
     setShowQRModal(false);
   };
 
+  const fetchMisPedidos = useCallback(async () => {
+    if (!user?.id) return;
+    setPedidosLoading(true);
+    try {
+      const { data } = await pedidosOnlineAPI.getMisPedidos(user.id);
+      setMisPedidos(data);
+    } catch (err) {
+      console.error('Error cargando pedidos:', err);
+    } finally {
+      setPedidosLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (tab === 'pedidos') fetchMisPedidos();
+  }, [tab, fetchMisPedidos]);
+
   const productosFiltrados = busqueda.trim()
     ? productos.filter((p) => p.nombre.toLowerCase().includes(busqueda.toLowerCase()))
     : productos;
@@ -154,30 +177,48 @@ const Tienda = () => {
     <div style={styles.page} ref={containerRef} className="tienda-layout">
       <h1 style={styles.title} ref={titleRef}>Tienda</h1>
 
-      {/* RUBROS */}
-      {rubros.length > 0 && (
-        <div style={styles.carouselWrap} ref={carouselRef}>
-          <Slider {...sliderSettings}>
-            {rubros.map((rubro) => (
-              <div key={rubro.id_rubro} style={{ padding: '0 0.5rem' }}>
-                <button
-                  onClick={() => setRubroSeleccionado(rubro.id_rubro)}
-                  style={{
-                    ...styles.rubroCard,
-                    ...(rubroSeleccionado === rubro.id_rubro ? styles.rubroActive : {}),
-                  }}
-                >
-                  {rubro.nombre}
-                </button>
-              </div>
-            ))}
-          </Slider>
-        </div>
-      )}
+      {/* TABS */}
+      <div style={styles.tabBar}>
+        <button
+          onClick={() => { setTab('tienda'); setPedidoDetalle(null); }}
+          style={{ ...styles.tabBtn, ...(tab === 'tienda' ? styles.tabBtnActive : {}) }}
+        >
+          🛍️ Productos
+        </button>
+        <button
+          onClick={() => { setTab('pedidos'); setPedidoDetalle(null); }}
+          style={{ ...styles.tabBtn, ...(tab === 'pedidos' ? styles.tabBtnActive : {}) }}
+        >
+          📦 Mis Pedidos
+        </button>
+      </div>
 
-      {/* COLUMNA IZQUIERDA - Productos */}
-      <div style={styles.leftCol}>
-        {rubroSeleccionado ? (
+      {tab === 'tienda' && (
+        <>
+          {/* RUBROS */}
+          {rubros.length > 0 && (
+            <div style={styles.carouselWrap} ref={carouselRef}>
+              <Slider {...sliderSettings}>
+                {rubros.map((rubro) => (
+                  <div key={rubro.id_rubro} style={{ padding: '0 0.5rem' }}>
+                    <button
+                      onClick={() => setRubroSeleccionado(rubro.id_rubro)}
+                      style={{
+                        ...styles.rubroCard,
+                        ...(rubroSeleccionado === rubro.id_rubro ? styles.rubroActive : {}),
+                      }}
+                    >
+                      {rubro.nombre}
+                    </button>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          )}
+
+          {/* COLUMNA IZQUIERDA - Productos */}
+          <div style={styles.leftCol}>
+            {rubroSeleccionado ? (
           <>
             <div style={styles.searchBar}>
               <input
@@ -288,6 +329,71 @@ const Tienda = () => {
           productos={carrito}
           onPagoAprobado={handlePagoAprobado}
           onCancelar={handleCancelarQR}
+          usuario={user}
+        />
+      )}
+        </>
+      )}
+
+      {tab === 'pedidos' && (
+        <div style={styles.pedidosSection}>
+          {pedidosLoading ? (
+            <p style={styles.empty}>Cargando pedidos...</p>
+          ) : pedidoDetalle ? (
+            <div style={styles.pedidoDetalleCard}>
+              <button onClick={() => setPedidoDetalle(null)} style={styles.backBtn}>← Volver a mis pedidos</button>
+              <h3 style={styles.pedidoDetalleTitle}>Pedido #{pedidoDetalle.id_pedido}</h3>
+              <div style={styles.pedidoDetalleMeta}>
+                <span>{new Date(pedidoDetalle.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                <span style={{ ...styles.estadoBadge, ...(pedidoDetalle.estado === 'entregado' ? styles.estadoEntregado : pedidoDetalle.estado === 'cancelado' ? styles.estadoCancelado : styles.estadoPendiente) }}>
+                  {pedidoDetalle.estado === 'pendiente' ? 'Pendiente' : pedidoDetalle.estado === 'en_preparacion' ? 'En preparación' : pedidoDetalle.estado === 'entregado' ? 'Entregado' : 'Cancelado'}
+                </span>
+              </div>
+              {pedidoDetalle.cliente_direccion && (
+                <p style={styles.pedidoDireccion}>📍 {pedidoDetalle.cliente_direccion}</p>
+              )}
+              <div style={styles.pedidoDetalleItems}>
+                {(Array.isArray(pedidoDetalle.items) ? pedidoDetalle.items : []).map((item, i) => (
+                  <div key={i} style={styles.pedidoDetalleItem}>
+                    <span>{item.cantidad}x {item.nombre}</span>
+                    <span>${(item.precio * item.cantidad).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={styles.pedidoDetalleTotal}>
+                <span>Total</span>
+                <span>${parseFloat(pedidoDetalle.total).toFixed(2)}</span>
+              </div>
+            </div>
+          ) : misPedidos.length === 0 ? (
+            <p style={styles.empty}>No tenés pedidos aún</p>
+          ) : (
+            <div style={styles.pedidosList}>
+              {misPedidos.map((pedido) => (
+                <div key={pedido.id_pedido} style={styles.pedidoCard} onClick={() => setPedidoDetalle(pedido)}>
+                  <div style={styles.pedidoCardHeader}>
+                    <span style={styles.pedidoCardId}>Pedido #{pedido.id_pedido}</span>
+                    <span style={{ ...styles.estadoBadge, ...(pedido.estado === 'entregado' ? styles.estadoEntregado : pedido.estado === 'cancelado' ? styles.estadoCancelado : styles.estadoPendiente) }}>
+                      {pedido.estado === 'pendiente' ? 'Pendiente' : pedido.estado === 'en_preparacion' ? 'En preparación' : pedido.estado === 'entregado' ? 'Entregado' : 'Cancelado'}
+                    </span>
+                  </div>
+                  <p style={styles.pedidoCardDate}>{new Date(pedido.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                  <p style={styles.pedidoCardItems}>{(Array.isArray(pedido.items) ? pedido.items : []).map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}</p>
+                  <p style={styles.pedidoCardTotal}>${parseFloat(pedido.total).toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {showQRModal && (
+        <QRModal
+          total={total}
+          productos={carrito}
+          onPagoAprobado={handlePagoAprobado}
+          onCancelar={handleCancelarQR}
+          usuario={user}
         />
       )}
     </div>
@@ -395,6 +501,58 @@ const styles = {
   },
   mpNote: {
     fontSize: '0.7rem', color: '#667085', textAlign: 'center', marginTop: '0.4rem',
+  },
+
+  /* TABS */
+  tabBar: {
+    gridColumn: '1 / -1', display: 'flex', gap: '0.5rem', marginBottom: '0.5rem',
+  },
+  tabBtn: {
+    flex: 1, padding: '0.75rem', background: 'white', border: '2px solid #E6EDF5',
+    borderRadius: '14px', fontWeight: '600', fontSize: '0.9375rem', cursor: 'pointer',
+    color: '#667085', transition: 'all 0.2s ease',
+  },
+  tabBtnActive: {
+    borderColor: '#1294F2', background: '#E8F4FD', color: '#1294F2',
+  },
+
+  /* MIS PEDIDOS */
+  pedidosSection: { gridColumn: '1 / -1' },
+  pedidosList: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
+  pedidoCard: {
+    background: 'white', borderRadius: '16px', border: '1px solid #E6EDF5',
+    padding: '1rem 1.25rem', cursor: 'pointer', transition: 'box-shadow 0.2s ease',
+  },
+  pedidoCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' },
+  pedidoCardId: { fontWeight: '700', fontSize: '0.9375rem', color: '#273444' },
+  pedidoCardDate: { fontSize: '0.8rem', color: '#667085', margin: '0 0 0.25rem' },
+  pedidoCardItems: { fontSize: '0.8125rem', color: '#404040', margin: '0 0 0.25rem', lineHeight: '1.4' },
+  pedidoCardTotal: { fontWeight: '700', fontSize: '1rem', color: '#1294F2', margin: 0 },
+  estadoBadge: {
+    fontSize: '0.7rem', fontWeight: '600', padding: '0.2rem 0.6rem',
+    borderRadius: '999px', textTransform: 'uppercase',
+  },
+  estadoPendiente: { background: '#FFF3E0', color: '#E65100' },
+  estadoEntregado: { background: '#E8F5E9', color: '#2E7D32' },
+  estadoCancelado: { background: '#FFEBEE', color: '#C62828' },
+
+  /* DETALLE PEDIDO */
+  pedidoDetalleCard: {
+    background: 'white', borderRadius: '20px', border: '1px solid #E6EDF5',
+    padding: '1.5rem',
+  },
+  pedidoDetalleTitle: { fontSize: '1.125rem', fontWeight: '700', color: '#273444', margin: '0.75rem 0 0.5rem' },
+  pedidoDetalleMeta: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', fontSize: '0.8125rem', color: '#667085' },
+  pedidoDireccion: { fontSize: '0.8125rem', color: '#667085', margin: '0 0 0.75rem' },
+  pedidoDetalleItems: { borderTop: '1px solid #E6EDF5', paddingTop: '0.75rem' },
+  pedidoDetalleItem: { display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', fontSize: '0.875rem', color: '#404040' },
+  pedidoDetalleTotal: {
+    display: 'flex', justifyContent: 'space-between', borderTop: '2px solid #E6EDF5',
+    paddingTop: '0.75rem', marginTop: '0.5rem', fontWeight: '700', fontSize: '1rem', color: '#273444',
+  },
+  backBtn: {
+    background: 'none', border: 'none', color: '#1294F2', fontWeight: '600',
+    fontSize: '0.875rem', cursor: 'pointer', padding: 0,
   },
 };
 
