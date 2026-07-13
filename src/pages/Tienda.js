@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { rubrosAPI, productosAPI, mpAPI } from '../services/api';
+import QRModal from '../components/QRModal';
 import gsap from 'gsap';
 
 const Tienda = () => {
@@ -11,6 +12,7 @@ const Tienda = () => {
   const [rubroSeleccionado, setRubroSeleccionado] = useState(null);
   const [carrito, setCarrito] = useState([]);
   const [procesando, setProcesando] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
   const [busqueda, setBusqueda] = useState('');
   const containerRef = useRef(null);
   const titleRef = useRef(null);
@@ -120,6 +122,16 @@ const Tienda = () => {
     } finally {
       setProcesando(false);
     }
+  };
+
+  const handlePagoAprobado = (pagoData) => {
+    setShowQRModal(false);
+    setCarrito([]);
+    alert('¡Pago aprobado! Tu compra fue registrada.');
+  };
+
+  const handleCancelarQR = () => {
+    setShowQRModal(false);
   };
 
   const productosFiltrados = busqueda.trim()
@@ -250,17 +262,34 @@ const Tienda = () => {
               <span>Total</span>
               <span style={styles.totalAmount}>${total.toFixed(2)}</span>
             </div>
-            <button
-              onClick={finalizarCompra}
-              style={{ ...styles.checkoutBtn, opacity: procesando ? 0.6 : 1 }}
-              disabled={procesando}
-            >
-              {procesando ? 'Procesando...' : 'Pagar con MercadoPago'}
-            </button>
-            <p style={styles.mpNote}>Te redirigiremos a la pasarela de pago segura</p>
+            <div style={styles.paymentBtns}>
+              <button
+                onClick={() => setShowQRModal(true)}
+                style={styles.qrBtn}
+              >
+                Pagar con QR
+              </button>
+              <button
+                onClick={finalizarCompra}
+                style={{ ...styles.checkoutBtn, opacity: procesando ? 0.6 : 1 }}
+                disabled={procesando}
+              >
+                {procesando ? 'Procesando...' : 'Pagar con MercadoPago'}
+              </button>
+            </div>
+            <p style={styles.mpNote}>Elegí tu método de pago preferido</p>
           </>
         )}
       </div>
+
+      {showQRModal && (
+        <QRModal
+          total={total}
+          productos={carrito}
+          onPagoAprobado={handlePagoAprobado}
+          onCancelar={handleCancelarQR}
+        />
+      )}
     </div>
   );
 };
@@ -349,10 +378,19 @@ const styles = {
     borderTop: '2px solid #f0f0f0', fontWeight: '700', fontSize: '1rem', color: '#273444',
   },
   totalAmount: { color: '#1294F2', fontSize: '1.1rem' },
+  paymentBtns: {
+    display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem',
+  },
+  qrBtn: {
+    width: '100%', padding: '0.7rem', background: 'white',
+    color: '#1294F2', border: '2px solid #1294F2', borderRadius: '14px',
+    fontWeight: '700', fontSize: '0.875rem', cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
   checkoutBtn: {
     width: '100%', padding: '0.7rem', background: 'linear-gradient(135deg, #009ee3, #007eb5)',
-    color: 'white', border: 'none', borderRadius: '10px', fontWeight: '700',
-    fontSize: '0.875rem', cursor: 'pointer', marginTop: '0.5rem',
+    color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700',
+    fontSize: '0.875rem', cursor: 'pointer',
     boxShadow: '0 4px 16px rgba(0,158,227,0.3)',
   },
   mpNote: {
