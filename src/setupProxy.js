@@ -14,6 +14,16 @@ module.exports = function (app) {
     })
   );
 
+  // Facturación electrónica AFIP va al backend local
+  app.use(
+    '/api/facturacion',
+    createProxyMiddleware({
+      target: localBackend,
+      changeOrigin: true,
+      secure: false,
+    })
+  );
+
   // Endpoints nuevos de CC van al backend local (aún no deployados en remoto)
   app.use(
     '/api/clientes/tickets-disponibles',

@@ -67,6 +67,14 @@ export const reportesAPI = {
   get: (tipo) => api.get(`/api/reportes/${tipo}`),
 };
 
+export const facturacionAPI = {
+  getConfig: () => api.get('/api/facturacion/config'),
+  getUltimoComprobante: (tipo) => api.get('/api/facturacion/ultimo-comprobante', { params: { tipo } }),
+  solicitarCAE: (datos) => api.post('/api/facturacion/solicitar-cae', datos),
+  anularComprobante: (datos) => api.post('/api/facturacion/anular', datos),
+  testWsaa: () => api.get('/api/facturacion/test-wsaa'),
+};
+
 export const mpAPI = {
   crearPreferencia: (carrito) => api.post('/api/mercadopago/crear-preferencia', { carrito }),
 };

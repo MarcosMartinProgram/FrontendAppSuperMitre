@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useKeyboard } from '../hooks/useKeyboard';
-import { productosAPI, ticketsAPI, clientesAPI } from '../services/api';
+import { productosAPI, ticketsAPI, clientesAPI, facturacionAPI } from '../services/api';
 import QRModal from '../components/QRModal';
 import WhatsAppButton from '../components/WhatsAppButton';
 
@@ -24,6 +24,8 @@ const Ventas = () => {
   const [showQR, setShowQR] = useState(false);
   const [entregaEfectivo, setEntregaEfectivo] = useState(0);
   const [whatsappData, setWhatsappData] = useState(null);
+  const [facturacionPendiente, setFacturacionPendiente] = useState(null);
+  const [facturacionCargando, setFacturacionCargando] = useState(false);
   const listaRef = useRef(null);
   const lineIdCounter = useRef(1);
 
@@ -148,7 +150,7 @@ const Ventas = () => {
     setCambio(pago - total);
   }, [pago, total]);
 
-  const generarTicketHTML = useCallback((prods, desc, tot, cliente, tipo, pagoInfo, nroTicket) => {
+  const generarTicketHTML = useCallback((prods, desc, tot, cliente, tipo, pagoInfo, nroTicket, datosAfip) => {
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-AR');
     const hora = ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
@@ -242,6 +244,14 @@ const Ventas = () => {
     ` : ''}
   </div>
   <div class="footer">
+    ${datosAfip ? `
+    <div style="border-top: 1px dashed #000; padding-top: 2mm; margin-bottom: 2mm;">
+      <p style="font-size: 9px; text-align: center; margin-bottom: 1mm;"><strong>COMPROBANTE AUTORIZADO</strong></p>
+      <p style="font-size: 8px; text-align: center;">CAE: ${datosAfip.cae}</p>
+      <p style="font-size: 8px; text-align: center;">Vence: ${datosAfip.vencimiento}</p>
+      ${datosAfip.qrUrl ? `<div style="text-align: center; margin-top: 1mm;"><img src="${datosAfip.qrUrl}" style="width: 40mm; height: 40mm;" /></div>` : ''}
+    </div>
+    ` : ''}
     <p>¡Gracias por su compra!</p>
     <p>Super Mitre</p>
   </div>
@@ -320,6 +330,7 @@ const Ventas = () => {
       setClienteSeleccionado(null);
       setTipoPago('contado');
       setShowQR(false);
+      setFacturacionPendiente(null);
 
       const resTickets = await ticketsAPI.getAll();
       setTickets(resTickets.data);
@@ -390,6 +401,7 @@ const Ventas = () => {
 
       const resTickets = await ticketsAPI.getAll();
       setTickets(resTickets.data);
+      setFacturacionPendiente(data?.ticket || { id_ticket: nroTicket });
     } catch (err) {
       console.error('Error al emitir ticket:', err);
       alert('Error al emitir el ticket');
@@ -405,8 +417,55 @@ const Ventas = () => {
     } else if (ticket.tipo_pago === 'contado_parcial') {
       pagoInfo = { parcial: true, pagado: ticket.pago_recibido || 0, cc: 0 };
     }
-    const ticketHTML = generarTicketHTML(prods, ticket.descuento, ticket.total, ticket.cliente, ticket.tipo_pago, pagoInfo, ticket.id_ticket);
+    const ticketHTML = generarTicketHTML(prods, ticket.descuento, ticket.total, ticket.cliente, ticket.tipo_pago, pagoInfo, ticket.id_ticket, ticket.cae ? {
+      cae: ticket.cae,
+      vencimiento: ticket.vencimiento_cae,
+      numero: ticket.numero_comprobante_afip,
+      tipo: ticket.tipo_comprobante_afip,
+      ptoVta: 1,
+      qrUrl: ticket.qr_afip_url,
+    } : null);
     imprimirTicket(ticketHTML);
+  }, [generarTicketHTML, imprimirTicket]);
+
+  const handleFacturar = useCallback(async (ticket) => {
+    setFacturacionCargando(true);
+    try {
+      const { data } = await facturacionAPI.solicitarCAE({
+        id_ticket: ticket.id_ticket,
+        tipo_comprobante: 11, // Factura C por defecto (monotributista)
+      });
+
+      if (data.ok) {
+        const prods = JSON.parse(ticket.productos);
+        let pagoInfo = null;
+        if (ticket.tipo_pago === 'cuenta_corriente_parcial') {
+          pagoInfo = { parcial: true, pagado: ticket.pago_recibido || 0, cc: ticket.total - (ticket.pago_recibido || 0) };
+        } else if (ticket.tipo_pago === 'contado_parcial') {
+          pagoInfo = { parcial: true, pagado: ticket.pago_recibido || 0, cc: 0 };
+        }
+        const ticketHTML = generarTicketHTML(prods, ticket.descuento, ticket.total, ticket.cliente, ticket.tipo_pago, pagoInfo, ticket.id_ticket, {
+          cae: data.cae,
+          vencimiento: data.vencimiento,
+          numero: data.numero,
+          tipo: data.tipoComprobante,
+          ptoVta: data.puntoVenta,
+          qrUrl: data.qr_url,
+        });
+        imprimirTicket(ticketHTML);
+
+        setFacturacionPendiente(null);
+        const resTickets = await ticketsAPI.getAll();
+        setTickets(resTickets.data);
+        alert(`✅ CAE obtenido: ${data.cae}\n${data.nombreComprobante} N° ${data.numero}`);
+      }
+    } catch (err) {
+      console.error('Error al facturar:', err);
+      const msg = err.response?.data?.error || err.message;
+      alert(`❌ Error al facturar:\n${msg}`);
+    } finally {
+      setFacturacionCargando(false);
+    }
   }, [generarTicketHTML, imprimirTicket]);
 
   const keyMap = useMemo(() => ({
@@ -652,6 +711,15 @@ const Ventas = () => {
                   <WhatsAppButton telefono={whatsappData.telefono} mensaje={whatsappData.mensaje} texto="Enviar por WhatsApp" />
                 </div>
               )}
+              {facturacionPendiente && (
+                <button
+                  onClick={() => handleFacturar(facturacionPendiente)}
+                  style={styles.facturarBtn}
+                  disabled={facturacionCargando}
+                >
+                  {facturacionCargando ? '⏳ Facturando...' : '📄 Facturar (CAE)'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -678,8 +746,20 @@ const Ventas = () => {
                       {t.tipo_pago === 'mercadopago_qr' && <span style={styles.mpBadge}>MP</span>}
                       {t.tipo_pago === 'cuenta_corriente_parcial' && <span style={styles.partialBadge}>CC PARCIAL</span>}
                       {t.tipo_pago === 'contado_parcial' && <span style={styles.partialBadge}>CONTADO PARCIAL</span>}
+                      {t.cae && <span style={styles.caeBadge}>CAE: {t.cae}</span>}
                     </div>
-                    <button onClick={() => reimprimirTicket(t)} style={styles.reprintBtn}>Reimprimir</button>
+                    <div style={{ display: 'flex', gap: '0.375rem' }}>
+                      {!t.cae && (
+                        <button
+                          onClick={() => { setShowTickets(false); handleFacturar(t); }}
+                          style={styles.facturarSmallBtn}
+                          disabled={facturacionCargando}
+                        >
+                          Facturar
+                        </button>
+                      )}
+                      <button onClick={() => reimprimirTicket(t)} style={styles.reprintBtn}>Reimprimir</button>
+                    </div>
                   </div>
                 ))
               )}
@@ -776,6 +856,7 @@ const styles = {
   emitBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #1294F2)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(18, 148, 242, 0.3)' },
   qrBtn: { width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #1294F2, #0B89FF)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(18, 148, 242, 0.3)' },
   secondaryBtn: { width: '100%', padding: '0.5rem', background: 'white', color: '#667085', border: '1px solid #E6EDF5', borderRadius: '14px', fontWeight: '500', fontSize: '0.75rem', cursor: 'pointer' },
+  facturarBtn: { width: '100%', padding: '0.625rem', background: 'linear-gradient(135deg, #1FB954, #16a34a)', color: 'white', border: 'none', borderRadius: '14px', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(31, 185, 84, 0.3)', marginTop: '0.5rem' },
 
   /* Modal */
   modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, backdropFilter: 'blur(4px)' },
@@ -790,6 +871,8 @@ const styles = {
   ccBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#FF6B35', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
   mpBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#1294F2', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
   partialBadge: { display: 'inline-block', fontSize: '0.5625rem', background: '#8b5cf6', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem' },
+  caeBadge: { display: 'inline-block', fontSize: '0.5rem', background: '#1FB954', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontWeight: '700', marginTop: '0.25rem', fontFamily: 'monospace' },
+  facturarSmallBtn: { padding: '0.375rem 0.75rem', background: '#1FB954', color: 'white', border: 'none', borderRadius: '0.375rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer' },
   reprintBtn: { padding: '0.375rem 0.75rem', background: '#E8F4FD', color: '#1294F2', border: '1px solid #D0ECFF', borderRadius: '0.375rem', fontSize: '0.6875rem', fontWeight: '600', cursor: 'pointer' },
   emptyMsg: { color: '#667085', fontSize: '0.8125rem', textAlign: 'center', padding: '1.5rem 0' },
 };
