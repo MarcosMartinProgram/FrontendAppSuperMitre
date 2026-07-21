@@ -78,6 +78,17 @@
 - **Cómo volver a homologación**: cambiar `AFIP_MODE=homologacion` y `AFIP_PTO_VTA=1` en Alwaysdata
 - **Pendiente**: pasar a producción permanente cuando se confirme que todo funciona (ya está en produc)
 
+### Plantilla Factura C (julio 2026) - Formato ticketera 80mm
+- **Separador**: `generarTicketHTML` tiene 2 caminos: si `datosAfip` → Factura C (ARCA), si no → ticket genérico
+- **Factura C SECCIÓN 1 - Encabezado Emisor**: "SUPER MITRE de MARTIN Marcos", Av. Bartolomé Mitre 430, "FACTURA (cod. 011) C" (C en recuadro), CUIT 20-30468401-2, Ing. Brutos, Inicio Actividades 01-09-2003, Condición IVA: Monotributo
+- **Factura C SECCIÓN 2 - Datos Comprobante**: "FACTURA (cod. 011)", N° FAC-C-00005-00000008, Fecha DD/MM/AAAA
+- **Factura C SECCIÓN 3 - Detalle Productos**: colDescripción | Tasa Iva | Subtotal. Fila: "Cant x P.Unitario" como auxiliar. Cada ítem: nombre, luego "Cant x $Precio | (21,00) | Subtotal"
+- **Factura C SECCIÓN 4 - Totales**: Importe Total (negrita, derecha), Pagos: [medio], pagos parciales si aplica
+- **Factura C SECCIÓN 5 - Pie ARCA**: QR embebido (data URL), CAE N°, Fecha Vto CAE, "ARCA" + "Comprobante Autorizado"
+- **Régimen Transparencia Fiscal**: columna "Tasa Iva" obligatoria, formato `(21,00)` usando `alicuota_iva` del producto (default 21%)
+- **Thermal printer fallback**: `print-server.js` `textoAEscpos` detecta headers "FACTURA (cod" y badges "ARCA", "Comprobante Autorizado" para formato ESC/POS
+- **Reimprimir**: `reimprimirTicket` pasa `ptoVta: ticket.pto_venta || 5` (default PV 5 = producción)
+
 ## Pendiente para el domingo
 - Verificar que los tickets creados con `tipo_pago: 'cuenta_corriente_parcial'` se guarden bien en la BD (el ENUM de Ticket solo tiene `contado` y `cuenta_corriente`)
 - Posiblemente necesitar agregar `cuenta_corriente_parcial` y `contado_parcial` al ENUM de `tipo_pago` en el backend

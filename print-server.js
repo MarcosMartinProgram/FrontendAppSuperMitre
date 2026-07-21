@@ -138,14 +138,16 @@ function textoAEscpos(printer, texto) {
   const ANCHO = 48;
 
   lineas.forEach(linea => {
-    const esHeader = /^SUPER MITRE$/i.test(linea) ||
+    const esHeader = /^SUPER MITRE/i.test(linea) ||
                      /^Ticket de Venta$/i.test(linea) ||
                      /^Comprobante de Pago$/i.test(linea) ||
+                     /^FACTURA\s*\(cod/i.test(linea) ||
                      /^¡Gracias/i.test(linea);
 
-    const esBadge = /PAGO PARCIAL|CUENTA CORRIENTE|MERCADOPAGO QR|RECIBO DE PAGO/i.test(linea);
+    const esBadge = /PAGO PARCIAL|CUENTA CORRIENTE|MERCADOPAGO QR|RECIBO DE PAGO|^ARCA$|Comprobante Autorizado/i.test(linea);
 
     const esTotal = /^TOTAL:/i.test(linea) ||
+                    /^Importe Total:/i.test(linea) ||
                     /^PAGO RECIBIDO:/i.test(linea) ||
                     /^SALDO PENDIENTE:/i.test(linea);
 

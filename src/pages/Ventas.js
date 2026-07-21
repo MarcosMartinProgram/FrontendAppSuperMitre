@@ -156,6 +156,148 @@ const Ventas = () => {
     const hora = ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
     const sub = prods.reduce((acc, p) => acc + parseFloat(p.precio_venta || p.precio) * p.cantidad, 0);
 
+    // ==================== FACTURA C (ARCA) ====================
+    if (datosAfip) {
+      const ptoVta = String(datosAfip.ptoVta || 5).padStart(5, '0');
+      const nroFmt = String(datosAfip.numero || nroTicket).padStart(8, '0');
+      const nroComprobante = `FAC-C-${ptoVta}-${nroFmt}`;
+      const fechaVtoFmt = datosAfip.vencimiento
+        ? `${datosAfip.vencimiento.substring(6, 8)}/${datosAfip.vencimiento.substring(4, 6)}/${datosAfip.vencimiento.substring(0, 4)}`
+        : '';
+
+      const fmtAlicuota = (p) => {
+        const alic = parseFloat(p.alicuota_iva || 21);
+        const intPart = Math.floor(alic);
+        const decPart = Math.round((alic - intPart) * 100);
+        return `(${intPart},${String(decPart).padStart(2, '0')})`;
+      };
+
+      return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: 80mm auto; margin: 0; }
+  @media print {
+    html, body { width: 80mm; margin: 0; padding: 0; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.35; width: 80mm; color: #000; background: #fff; }
+  .ticket { width: 80mm; padding: 3mm 4mm 5mm 4mm; }
+  .header { text-align: center; margin-bottom: 2mm; }
+  .header .title { font-size: 13px; font-weight: bold; letter-spacing: 0.5px; }
+  .header .subtitle { font-size: 9px; margin-top: 1mm; }
+  .header .factura-label { font-size: 10px; font-weight: bold; margin-top: 1.5mm; letter-spacing: 0.5px; }
+  .header .factura-label .letra { font-size: 16px; font-weight: bold; border: 2px solid #000; padding: 0 3px; margin-left: 3px; vertical-align: middle; }
+  .fiscal-data { font-size: 8.5px; margin-top: 1.5mm; line-height: 1.4; }
+  .fiscal-data p { margin-bottom: 0; }
+  .section-title { font-size: 10px; font-weight: bold; text-align: center; margin: 2mm 0 1mm 0; letter-spacing: 0.5px; }
+  .divider { border-top: 1px dashed #000; margin: 2mm 0; }
+  .info-line { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 0.5mm; }
+  .col-header { display: flex; justify-content: space-between; font-size: 8.5px; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 0.5mm; margin-bottom: 1mm; }
+  .item { margin-bottom: 1.5mm; }
+  .item-name { font-weight: bold; font-size: 10px; }
+  .item-detail { font-size: 9.5px; display: flex; justify-content: space-between; margin-top: 0.3mm; }
+  .totals { border-top: 1px dashed #000; padding-top: 2mm; margin-top: 2mm; }
+  .total-line { display: flex; justify-content: flex-end; font-size: 12px; font-weight: bold; margin-bottom: 0.5mm; }
+  .total-line span:last-child { margin-left: 3mm; }
+  .payment-line { font-size: 9.5px; margin-bottom: 0.5mm; }
+  .qr-section { text-align: center; margin-top: 3mm; }
+  .qr-section img { width: 38mm; height: 38mm; }
+  .cae-data { font-size: 8.5px; text-align: center; margin-top: 1.5mm; line-height: 1.5; }
+  .arca-footer { text-align: center; margin-top: 2mm; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
+  .arca-footer .sub { font-size: 8px; font-weight: normal; letter-spacing: 0; margin-top: 0.5mm; }
+  .partial-line { font-size: 9.5px; margin-bottom: 0.5mm; }
+  .badge { background: #000; color: #fff; padding: 1px 4px; font-size: 8px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="ticket">
+  <!-- SECCION 1: Encabezado del Emisor -->
+  <div class="header">
+    <div class="title">SUPER MITRE de MARTIN Marcos</div>
+    <div class="subtitle">Av. Bartolomé Mitre 430</div>
+    <div class="factura-label">FACTURA (cod. 011) <span class="letra">C</span></div>
+    <div class="fiscal-data">
+      <p>CUIT Nro: 20-30468401-2</p>
+      <p>Ing. Brutos: 20-30468401-2</p>
+      <p>Inicio de Actividades: 01-09-2003</p>
+      <p>Condición IVA: Monotributo</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCION 2: Datos del Comprobante -->
+  <div class="section-title">FACTURA (cod. 011)</div>
+  <div class="info-line">
+    <span><strong>N° ${nroComprobante}</strong></span>
+  </div>
+  <div class="info-line">
+    <span>Fecha: ${fecha}</span>
+    <span>${hora}</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCION 3: Detalle de Productos -->
+  <div style="font-size: 8px; text-align: right; margin-bottom: 0.5mm;">Cant x P.Unitario</div>
+  <div class="col-header">
+    <span>Descripción</span>
+    <span>Tasa Iva</span>
+    <span>Subtotal</span>
+  </div>
+  <div>
+    ${prods.map((p) => {
+      const precio = parseFloat(p.precio_venta || p.precio);
+      const subtotal = precio * p.cantidad;
+      const alicuota = fmtAlicuota(p);
+      return `
+    <div class="item">
+      <div class="item-name">${p.nombre}</div>
+      <div class="item-detail">
+        <span>${p.cantidad} x $${precio.toFixed(2)}</span>
+        <span>${alicuota}</span>
+        <span>$${subtotal.toFixed(2)}</span>
+      </div>
+    </div>`;
+    }).join('')}
+  </div>
+
+  <!-- SECCION 4: Totales y Pagos -->
+  <div class="totals">
+    ${desc > 0 ? `<div class="payment-line" style="text-align:right;">Descuento (${desc}%): -$${(sub * desc / 100).toFixed(2)}</div>` : ''}
+    <div class="total-line"><span>Importe Total: $${parseFloat(tot).toFixed(2)}</span></div>
+    <div class="payment-line">Pagos: ${tipo === 'mercadopago_qr' ? 'MercadoPago QR' : tipo === 'cuenta_corriente' ? 'Cuenta Corriente' : 'Contado'}</div>
+    ${pagoInfo && pagoInfo.parcial ? `
+    <div class="divider"></div>
+    <div class="partial-line"><strong>Pagado:</strong> $${pagoInfo.pagado.toFixed(2)}</div>
+    ${pagoInfo.cc > 0 ? `<div class="partial-line"><strong>A CC:</strong> $${pagoInfo.cc.toFixed(2)}</div>` : ''}
+    ${(parseFloat(tot) - pagoInfo.pagado - pagoInfo.cc) > 0 ? `<div class="partial-line"><strong>Saldo pendiente:</strong> $${(parseFloat(tot) - pagoInfo.pagado - pagoInfo.cc).toFixed(2)}</div>` : ''}
+    ` : ''}
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCION 5: Pie Fiscal y Validación (ARCA) -->
+  <div class="qr-section">
+    ${datosAfip.qrUrl ? `<img src="${datosAfip.qrUrl}" />` : ''}
+  </div>
+  <div class="cae-data">
+    <div>CAE N°: ${datosAfip.cae}</div>
+    <div>Fecha Vto CAE: ${fechaVtoFmt}</div>
+  </div>
+  <div class="arca-footer">
+    <div>ARCA</div>
+    <div class="sub">Comprobante Autorizado</div>
+  </div>
+</div>
+</body>
+</html>`;
+    }
+
+    // ==================== TICKET GENÉRICO (sin facturación) ====================
     const esParcial = pagoInfo && pagoInfo.parcial;
     const montoPagado = esParcial ? pagoInfo.pagado : (tipo === 'contado' ? tot : 0);
     const montoCC = esParcial ? pagoInfo.cc : (tipo === 'cuenta_corriente' ? tot : 0);
@@ -244,14 +386,6 @@ const Ventas = () => {
     ` : ''}
   </div>
   <div class="footer">
-    ${datosAfip ? `
-    <div style="border-top: 1px dashed #000; padding-top: 2mm; margin-bottom: 2mm;">
-      <p style="font-size: 9px; text-align: center; margin-bottom: 1mm;"><strong>COMPROBANTE AUTORIZADO</strong></p>
-      <p style="font-size: 8px; text-align: center;">CAE: ${datosAfip.cae}</p>
-      <p style="font-size: 8px; text-align: center;">Vence: ${datosAfip.vencimiento}</p>
-      ${datosAfip.qrUrl ? `<div style="text-align: center; margin-top: 1mm;"><img src="${datosAfip.qrUrl}" style="width: 40mm; height: 40mm;" /></div>` : ''}
-    </div>
-    ` : ''}
     <p>¡Gracias por su compra!</p>
     <p>Super Mitre</p>
   </div>
@@ -422,7 +556,7 @@ const Ventas = () => {
       vencimiento: ticket.vencimiento_cae,
       numero: ticket.numero_comprobante_afip,
       tipo: ticket.tipo_comprobante_afip,
-      ptoVta: 1,
+      ptoVta: ticket.pto_venta || 5,
       qrUrl: ticket.qr_afip_url,
     } : null);
     imprimirTicket(ticketHTML);
