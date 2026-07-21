@@ -54,6 +54,30 @@
 - Modelo Ticket: campo `estado` con ENUM `pendiente`, `pagado_parcial`, `pagado_total`
 - Modelo MovimientoCuentaCorriente: campos `numero_recibo`, `tickets_pagados` (JSON)
 
+## Facturación electrónica AFIP/ARCA (julio 2026) ✅ FUNCIONANDO EN PRODUCCIÓN
+- **Estado**: CAE aprobado en producción. Primer comprobante autorizado: Factura C N° 5
+- **CAE de prueba**: `86290616377865` (vence 20260730)
+- **Bug crítico resuelto**: `parseXmlSimple` no leía tags sin namespace. AFIP devuelve `<CbteNro>4</CbteNro>` sin prefijo `ar:`, regex solo matcheaba `<ar:CbteNro>` → siempre leía 0 → enviaba comprobante #1 → error 10016
+- **Fix**: regex adicional para tags `<Tag>valor</Tag>` sin namespace, con protección para no sobreescribir versión namespaced
+- **Timezone**: `formatFechaComp()` y `formatFechaQR()` reciben `new Date()` (UTC) y restan 3h internamente. NUNCA pre-restar en el route
+- **URL WSFE producción**: `https://servicios1.afip.gov.ar/wsfev1/service.asmx` (NO es `wsfe.afip.gov.ar` que da ENOTFOUND)
+- **URL WSFE homologación**: `https://wswhomo.afip.gov.ar/wsfev1/service.asmx`
+- **URL WSAA producción**: `https://wsaa.afip.gov.ar/ws/services/LoginCms`
+- **QR AFIP**: generado con `qrcode` npm como data URL PNG embebido (no depende de servidor externo arca.gob.ar). Paquete `qrcode` instalado en Alwaysdata con `npm install`
+- **Backend afipService.js**: TRA, WSAA auth, WSFE FECompUltimoAutorizado + FECAESolicitar, QR data URL, TA cache en disco
+- **Backend routes/facturacion.js**: endpoints config, ultimo-comprobante, solicitar-cae, anular, test-wsaa
+- **Frontend Ventas.js**: botón "Facturar (CAE)", ticket con CAE + QR AFIP embebido, badge CAE en modal
+- **Proxy**: `/api/facturacion` → backend local (setupProxy.js)
+- **Certificados homologación**: `/home/cacmarcos/www/appsupermitre/certs/homologacion/` (supermitre.crt + privada.key)
+- **Certificados producción**: `/home/cacmarcos/www/appsupermitre/certs/produccion/` (supermitre_183515000a1d65eb.crt + privada.key)
+- **Variables de entorno Alwaysdata** (producción activa):
+  - `AFIP_CUIT=20304684012`
+  - `AFIP_PTO_VTA=5` (punto de venta 5 para webservice)
+  - `AFIP_MODE=produccion`
+- **Habilitación en ARCA portal**: certificado `supermitre` (serie `183515000a1d65eb`) habilitado para WSFE en punto de venta 5
+- **Cómo volver a homologación**: cambiar `AFIP_MODE=homologacion` y `AFIP_PTO_VTA=1` en Alwaysdata
+- **Pendiente**: pasar a producción permanente cuando se confirme que todo funciona (ya está en produc)
+
 ## Pendiente para el domingo
 - Verificar que los tickets creados con `tipo_pago: 'cuenta_corriente_parcial'` se guarden bien en la BD (el ENUM de Ticket solo tiene `contado` y `cuenta_corriente`)
 - Posiblemente necesitar agregar `cuenta_corriente_parcial` y `contado_parcial` al ENUM de `tipo_pago` en el backend
@@ -86,5 +110,7 @@
 - `src/setupProxy.js` - proxy split backend local/remoto
 - `backendsupermitre/routes/clientes.js` - rutas CC (pago, tickets-pendientes, resumen)
 - `backendsupermitre/routes/tickets.js` - CRUD tickets
+- `backendsupermitre/routes/facturacion.js` - rutas AFIP (solicitar-cae, ultimo-comprobante, anular)
+- `backendsupermitre/services/afipService.js` - servicio AFIP (TRA, WSAA, WSFE, QR)
 - `backendsupermitre/models/Ticket.js` - modelo ticket
 - `backendsupermitre/models/MovimientoCuentaCorriente.js` - modelo movimientos CC
