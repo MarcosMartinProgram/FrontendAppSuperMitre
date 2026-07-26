@@ -42,8 +42,8 @@ const Rubros = () => {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
+    <div style={styles.page} className="rubros-page">
+      <div style={styles.header} className="rubros-header">
         <div>
           <h1 style={styles.title}>Gestión de Rubros</h1>
           <p style={styles.subtitle}>{rubros.length} rubros registrados</p>
@@ -51,12 +51,12 @@ const Rubros = () => {
         <button onClick={() => navigate('/panel')} style={styles.backBtn}>← Panel</button>
       </div>
 
-      <div style={styles.layout}>
+      <div style={styles.layout} className="rubros-layout">
         <div style={styles.formCard}>
           <h3 style={styles.cardTitle}>Nuevo Rubro</h3>
           {error && <div style={styles.error}>{error}</div>}
           {success && <div style={styles.success}>{success}</div>}
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <form onSubmit={handleSubmit} style={styles.form} className="rubros-form">
             <input
               type="text"
               placeholder="Nombre del rubro"

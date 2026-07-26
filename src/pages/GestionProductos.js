@@ -59,7 +59,7 @@ const GestionProductos = () => {
 
   return (
     <div style={styles.page} className="gestion-page">
-      <div style={styles.header}>
+      <div style={styles.header} className="gestion-header">
         <div>
           <h1 style={styles.title}>Gestión de Productos</h1>
           <p style={styles.subtitle}>{productos.length} productos registrados</p>
@@ -70,7 +70,7 @@ const GestionProductos = () => {
       <div style={styles.layout} className="gestion-layout">
         <div style={styles.formCard} className="gestion-form">
           <h3 style={styles.cardTitle}>{editando ? 'Editar Producto' : 'Nuevo Producto'}</h3>
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <form onSubmit={handleSubmit} style={styles.form} className="gestion-form-inner">
             <input
               type="text"
               placeholder="Código de barras"
@@ -152,7 +152,7 @@ const GestionProductos = () => {
         </div>
 
         <div style={styles.listCard}>
-          <div style={styles.listHeader}>
+          <div style={styles.listHeader} className="gestion-list-header">
             <h3 style={styles.cardTitle}>Productos</h3>
             <input
               type="text"

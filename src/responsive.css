@@ -85,6 +85,21 @@
 }
 
 @media (max-width: 600px) {
+  .gestion-header {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  .gestion-list-header {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+  }
+  .gestion-list-header input {
+    width: 100% !important;
+  }
+  .gestion-form-inner {
+    overflow: visible !important;
+  }
   .gestion-input-row {
     flex-direction: column !important;
   }
@@ -110,6 +125,26 @@
   }
   .cc-form-row {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===== Rubros ===== */
+@media (max-width: 900px) {
+  .rubros-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .rubros-page {
+    padding: 1rem !important;
+  }
+  .rubros-header {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  .rubros-form {
+    flex-direction: column !important;
   }
 }
 
