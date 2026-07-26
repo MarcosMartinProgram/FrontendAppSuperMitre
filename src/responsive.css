@@ -57,6 +57,10 @@
   .ventas-search-hint {
     display: none !important;
   }
+  .ventas-search-bar input {
+    font-size: 0.9375rem !important;
+    min-width: 0 !important;
+  }
   .ventas-product-row {
     padding: 0.75rem !important;
   }

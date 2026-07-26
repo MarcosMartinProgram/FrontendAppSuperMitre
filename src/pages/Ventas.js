@@ -644,7 +644,7 @@ const Ventas = () => {
           <input
             className="busqueda-input"
             type="text"
-            placeholder="Escanear código de barras o buscar por nombre..."
+            placeholder="Buscar producto o código..."
             value={busqueda}
             onChange={(e) => { setBusqueda(e.target.value); setResultadosBusqueda([]); }}
             onKeyDown={(e) => { if (e.key === 'Enter') buscarYAgregar(); }}
