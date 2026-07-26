@@ -638,7 +638,7 @@ const Ventas = () => {
       </div>
 
       {/* Barra de búsqueda unificada */}
-      <div style={styles.searchBar}>
+      <div style={styles.searchBar} className="ventas-search-bar">
         <div style={styles.searchInputWrap}>
           <span style={styles.searchIcon}>🔍</span>
           <input
@@ -651,7 +651,7 @@ const Ventas = () => {
             style={styles.searchInput}
             autoFocus
           />
-          <span style={styles.searchHint}>Enter para buscar</span>
+          <span style={styles.searchHint} className="ventas-search-hint">Enter para buscar</span>
         </div>
         {resultadosBusqueda.length > 0 && (
           <div style={styles.dropdown}>
@@ -667,7 +667,7 @@ const Ventas = () => {
         )}
       </div>
 
-      <div style={styles.mainLayout}>
+      <div style={styles.mainLayout} className="ventas-layout">
         {/* COLUMNA CENTRAL - Productos (grande, para que vea el cliente) */}
         <div style={styles.centerCol}>
           <div style={styles.productCard}>
@@ -684,14 +684,14 @@ const Ventas = () => {
                 <p style={styles.emptyText}>Escaneá o buscá un producto</p>
               </div>
             ) : (
-              <div style={styles.bigProductList} ref={listaRef}>
+              <div style={styles.bigProductList} ref={listaRef} className="ventas-product-list">
                 {productosVenta.map((p, i) => {
                   const precio = precioProducto(p);
                   return (
-                    <div key={p.lineId} style={styles.bigProductRow}>
+                    <div key={p.lineId} style={styles.bigProductRow} className="ventas-product-row">
                       <div style={styles.bigProductInfo}>
                         <span style={styles.bigProductName}>{p.nombre}</span>
-                        <div style={styles.bigProductMeta}>
+                        <div style={styles.bigProductMeta} className="ventas-product-meta">
                           {p.es_variable && <span style={styles.variableBadge}>variable</span>}
                           <input type="number" min="0" step="0.01" value={p.precio_venta || p.precio}
                             onChange={(e) => cambiarPrecio(p.lineId, e.target.value)}

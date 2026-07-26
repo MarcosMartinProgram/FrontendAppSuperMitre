@@ -419,7 +419,7 @@ const CuentasCorrientes = () => {
         </div>
 
         {clienteSeleccionado && (
-          <div style={styles.detailCard}>
+          <div style={styles.detailCard} className="cc-detail-card">
             <h3 style={styles.cardTitle}>Detalle del Cliente</h3>
             <div style={styles.detailGrid}>
               <div style={styles.detailField}>

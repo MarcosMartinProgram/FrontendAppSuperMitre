@@ -12,6 +12,12 @@
   width: 100%;
 }
 
+@media (max-width: 600px) {
+  .app-content {
+    padding: 0.75rem;
+  }
+}
+
 /* Global button styles */
 .btn-primary {
   background: linear-gradient(180deg, #24A2FF, #0076E6);

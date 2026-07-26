@@ -29,8 +29,8 @@ const Reportes = () => {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
+    <div style={styles.page} className="reportes-page">
+      <div style={styles.header} className="reportes-header">
         <div>
           <h1 style={styles.title}>Reportes</h1>
           <p style={styles.subtitle}>Consultá las estadísticas del negocio</p>
