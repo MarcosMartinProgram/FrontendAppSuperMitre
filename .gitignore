@@ -25,3 +25,6 @@ yarn-error.log*
 
 .vercel
 .env*
+
+# Agentes opencode (locales, no subir a github)
+.agents/

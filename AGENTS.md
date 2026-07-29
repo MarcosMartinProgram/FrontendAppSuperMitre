@@ -111,6 +111,50 @@
 - **Logo**: `public/logo-sm.png`, **Favicon**: `public/favicon.png`
 - **Video hero**: `public/video-institucional.mp4` (autoplay muted loop)
 
+## Auditoría de seguridad y limpieza de logs (julio 2026)
+
+### Auditoría completa (BackendAppSuperMitre)
+- **Auth middleware**: `middleware/authMiddleware.js` con `verificarToken` y `verificarRol`
+- **SQL injection**: corregido en `routes/reportes.js` (parámetros Sequelize), `migrate-tipo-pogo.js` (sin fallbacks hardcodeados)
+- **Auth faltante**: agregado en `routes/productos.js`, `routes/clientes.js`, `routes/tickets.js`
+- **Webhook FIRMA**: `controllers/webhookController.js` verifica HMAC-SHA256
+- **Security headers**: CORS consolidado en `index.js`, sin helmet, headers manuales
+- **Print server**: `print-server.js` protegido con `Authorization: Bearer <PRINT_API_KEY>`
+- **Secrets**: credenciales nunca se commitean, `.env` ignorado, migrado a variables de entorno Alwaysdata
+
+### Limpieza de logs sensibles (lunes 28 julio 2026) - commit `f1d2df0`
+- **CRÍTICO - `services/afipService.js`**: eliminados dumps de XML SOAP con `Token`+`Sign` de AFIP (líneas 355, 461, 482, 499, 528). También eliminado `DocNro` en log de solicitud CAE y `Respuesta completa` en error WSAA.
+- **`config/database.js`**: ya no logea `DB_HOST`, `DB_NAME`, `DB_USER` (solo muestra si password está configurada)
+- **`routes/pedidosOnline.js`**: ya no logea `req.body` completo (solo `order_id`)
+- **`routes/clientes.js`**: eliminadas ~50 líneas de debug verbose en `asociar-ticket` que exponían nombres, saldos, IDs. Demás logs reemplazados por `id_cliente` en vez de `cliente.nombre`
+- **`controllers/mercadoPagoController.js`**: ya no logea `orderBody` completo (solo cantidad de items)
+- **AGENTS.md y `.agents/`**: ignorados por git (`.gitignore`), no se suben a GitHub
+
+### Variables de entorno Alwaysdata (producción)
+| Variable | Valor | Dónde se usa |
+|---|---|---|
+| `SECRET_KEY` | Generada con `crypto.randomBytes(32).toString('hex')` | JWT auth |
+| `ADMIN_CODE` | (sin definir aún) | Register de roles especiales |
+| `AFIP_CUIT` | `20304684012` | WSFE |
+| `AFIP_PTO_VTA` | `5` | Facturación |
+| `AFIP_MODE` | `produccion` | AFIP |
+| `MP_ONLINE_ACCESS_TOKEN` | (token prod) | MercadoPago online |
+| `MP_QR_ACCESS_TOKEN` | (token prod) | MercadoPago QR |
+| `DB_PASSWORD` | (password BD) | Conexión MySQL |
+| `PRINT_API_KEY` | (clave print-server) | Print server auth |
+
+### Cómo deployar cambios en Alwaysdata
+```bash
+# Backend
+ssh cacmarcos@ssh-cacmarcos.alwaysdata.net
+cd ~/www/appsupermitre
+git pull
+pm2 restart appsupermitre  # o reiniciar desde el panel
+
+# Frontend
+# Build local y subir a Alwaysdata via FTP / panel
+```
+
 ## Archivos clave
 - `src/pages/Ventas.js` - punto de venta (755 líneas)
 - `src/pages/CuentasCorrientes.js` - gestión de CC con pagos (~340 líneas)
