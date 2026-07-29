@@ -5,20 +5,38 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+
+const API_KEY = process.env.PRINT_API_KEY || '';
+
+if (!API_KEY) {
+  console.warn('⚠️ PRINT_API_KEY no configurada. El servidor de impresión no tiene autenticación.');
+}
+
+function verificarAuth(req, res, next) {
+  if (!API_KEY) return next();
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'API key requerida (Authorization: Bearer <api_key>)' });
+  }
+
+  const key = authHeader.replace('Bearer ', '').trim();
+  if (key !== API_KEY) {
+    return res.status(403).json({ error: 'API key inválida' });
+  }
+
+  next();
+}
+
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5000'] }));
 app.use(express.json({ limit: '5mb' }));
 
 const PORT = process.env.PRINT_PORT || 3210;
-
-// ==================== CONFIGURACIÓN ====================
-const TIPO_IMPRESORA = 'epson';  // 'epson' | 'star'
-
-// ==================== DETECCIÓN LINUX ====================
+const TIPO_IMPRESORA = 'epson';
 
 function detectarImpresorasLinux() {
   const impresoras = [];
 
-  // 1. Buscar por /dev/usb/lp* (impresoras USB paralelas)
   try {
     const devs = fs.readdirSync('/dev').filter(f => f.startsWith('lp'));
     devs.forEach(d => {
@@ -26,14 +44,12 @@ function detectarImpresorasLinux() {
     });
   } catch {}
 
-  // 2. Buscar por /dev/usb/lp0 directamente
   try {
     if (fs.existsSync('/dev/usb/lp0') && !impresoras.find(p => p.id === '/dev/usb/lp0')) {
       impresoras.push({ id: '/dev/usb/lp0', nombre: 'usb/lp0', tipo: 'usb' });
     }
   } catch {}
 
-  // 3. Usar lpstat para impresoras del sistema (CUPS)
   try {
     const stdout = execSync('lpstat -p 2>/dev/null', { encoding: 'utf-8', timeout: 3000 });
     stdout.split('\n').forEach(line => {
@@ -44,7 +60,6 @@ function detectarImpresorasLinux() {
     });
   } catch {}
 
-  // 4. Buscar por vendor:product de impresoras térmicas comunes en /sys/bus/usb/devices
   try {
     const stdout = execSync(
       `lsusb 2>/dev/null | grep -iE "epson|star|bixolon|ceipt|pos|thermal|0x04b8|0x0525|0x0416" || true`,
@@ -65,8 +80,6 @@ function detectarImpresorasLinux() {
   return impresoras;
 }
 
-// ==================== CONFIGURACIÓN DINÁMICA ====================
-
 let configActiva = null;
 
 function buildConfig(interfaz) {
@@ -78,8 +91,6 @@ function buildConfig(interfaz) {
 
   if (!interfaz || interfaz === 'auto') {
     const impresoras = detectarImpresorasLinux();
-
-    // Prioridad: /dev/usb/lp0 > /dev/lp0 > primera COM detectada
     const preferida = impresoras.find(p => p.id === '/dev/usb/lp0')
       || impresoras.find(p => p.id === '/dev/lp0')
       || impresoras.find(p => p.tipo === 'usb-lp')
@@ -88,10 +99,8 @@ function buildConfig(interfaz) {
 
     if (preferida) {
       base.interface = preferida.id;
-      console.log(`  Impresora detectada: ${preferida.nombre} (${preferida.id})`);
     } else {
       base.interface = 'usb';
-      console.log('  Usando interfaz USB genérica');
     }
   } else {
     base.interface = interfaz;
@@ -100,7 +109,6 @@ function buildConfig(interfaz) {
   return base;
 }
 
-// ==================== UTILIDADES ====================
 function htmlATexto(html) {
   let texto = html;
 
@@ -191,9 +199,7 @@ function textoAEscpos(printer, texto) {
   });
 }
 
-// ==================== ENDPOINTS ====================
-
-app.get('/print/detect', (req, res) => {
+app.get('/print/detect', verificarAuth, (req, res) => {
   const impresoras = detectarImpresorasLinux();
   res.json({
     impresoras,
@@ -201,7 +207,7 @@ app.get('/print/detect', (req, res) => {
   });
 });
 
-app.get('/print/health', (req, res) => {
+app.get('/print/health', verificarAuth, (req, res) => {
   res.json({
     status: 'ok',
     interface: configActiva?.interface || 'auto',
@@ -209,17 +215,16 @@ app.get('/print/health', (req, res) => {
   });
 });
 
-app.post('/print/set', (req, res) => {
+app.post('/print/set', verificarAuth, (req, res) => {
   const { interfaz } = req.body;
   if (!interfaz) {
     return res.status(400).json({ error: 'Se requiere "interfaz" (ej: "/dev/usb/lp0", "cups", "auto")' });
   }
   configActiva = buildConfig(interfaz);
-  console.log(`[PRINT] Impresora cambiada a: ${configActiva.interface}`);
   res.json({ success: true, interface: configActiva.interface });
 });
 
-app.post('/print', async (req, res) => {
+app.post('/print', verificarAuth, async (req, res) => {
   const { html, texto } = req.body;
 
   if (!html && !texto) {
@@ -250,7 +255,6 @@ app.post('/print', async (req, res) => {
 
     const execute = await printer.execute();
     if (execute) {
-      console.log(`[PRINT] Ticket impreso OK - ${new Date().toLocaleTimeString('es-AR')}`);
       res.json({ success: true });
     } else {
       res.status(500).json({ error: 'Error al enviar a la impresora' });
@@ -261,7 +265,6 @@ app.post('/print', async (req, res) => {
   }
 });
 
-// ==================== INICIAR ====================
 app.listen(PORT, () => {
   console.log('');
   console.log('╔══════════════════════════════════════════════╗');
@@ -270,25 +273,17 @@ app.listen(PORT, () => {
   console.log(`║  Puerto: ${String(PORT).padEnd(36)}║`);
   console.log(`║  SO:     Linux                                ║`);
   console.log('╠══════════════════════════════════════════════╣');
-  console.log('║  Detectando impresoras USB...                 ║');
+  console.log(`║  AUTH:   ${API_KEY ? 'API Key configurada'.padEnd(34) : '⚠ SIN AUTH'.padEnd(37)}║`);
   console.log('╚══════════════════════════════════════════════╝');
   console.log('');
 
   const impresoras = detectarImpresorasLinux();
-
   if (impresoras.length > 0) {
     console.log(' Impresoras encontradas:');
     impresoras.forEach(p => console.log(`   → ${p.nombre} [${p.id}] (${p.tipo})`));
   } else {
     console.log(' ⚠ No se detectaron impresoras.');
-    console.log('   Verificá con: GET /print/detect');
   }
 
-  console.log('');
-  console.log(' Endpoints:');
-  console.log(`   GET  http://localhost:${PORT}/print/detect  → Ver impresoras`);
-  console.log(`   GET  http://localhost:${PORT}/print/health   → Estado`);
-  console.log(`   POST http://localhost:${PORT}/print          → Imprimir`);
-  console.log(`   POST http://localhost:${PORT}/print/set      → Cambiar impresora`);
   console.log('');
 });
