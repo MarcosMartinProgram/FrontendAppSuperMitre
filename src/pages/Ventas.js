@@ -317,7 +317,7 @@ const Ventas = () => {
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.3; width: 80mm; color: #000; background: #fff; }
-  .ticket { width: 80mm; padding: 2mm 3mm 5mm 3mm; }
+  .ticket { width: 80mm; padding: 3mm 5mm 5mm 5mm; }
   .header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 2mm; margin-bottom: 2mm; }
   .header h1 { font-size: 14px; font-weight: bold; letter-spacing: 1px; margin-bottom: 1mm; }
   .header .sub { font-size: 10px; color: #333; }

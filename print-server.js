@@ -112,7 +112,7 @@ function buildConfig(interfaz) {
 function htmlATexto(html) {
   let texto = html;
 
-  const ticketMatch = texto.match(/<div class="ticket">([\s\S]*?)<\/div>\s*<\/body>/);
+  const ticketMatch = texto.match(/<div class="ticket">([\s\S]*?)<\/div>\s*\n?<\/body>/);
   if (ticketMatch) texto = ticketMatch[1];
 
   texto = texto
@@ -250,6 +250,7 @@ app.post('/print', verificarAuth, async (req, res) => {
     const contenido = texto || htmlATexto(html);
 
     printer.clear();
+    printer.feed(1);
     textoAEscpos(printer, contenido);
     printer.cut();
 
